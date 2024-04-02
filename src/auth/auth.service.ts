@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/users/dtos/create-user.dto';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -28,6 +28,18 @@ export class AuthService {
     const token = await this.signRefreshAndAccessTokens(newUser._id, newUser.username);
     await this.updateRefreshToken(newUser._id, token.refreshToken);
     return token;
+  }
+
+  async logIn(logInDto: CreateUserDto) {
+    const user = await this.usersService.findByEmail(logInDto.email);
+
+    if (!user) throw new UnauthorizedException('User is not found');
+
+    const isPasswordValid = await bcrypt.compare(logInDto.password, user.password);
+    if (!isPasswordValid) throw new UnauthorizedException(`Password doesn't match`);
+    const tokens = await this.signRefreshAndAccessTokens(user._id, user.username);
+    await this.updateRefreshToken(user._id, tokens.refreshToken);
+    return tokens;
   }
 
   private async signRefreshAndAccessTokens(userId: string, username: string) {
