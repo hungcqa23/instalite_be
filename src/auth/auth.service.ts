@@ -24,22 +24,41 @@ export class AuthService {
       ...createUserDto,
       password: hash
     });
-    const token = await this;
+
+    const token = await this.signRefreshAndAccessTokens(newUser._id, newUser.username);
+    await this.updateRefreshToken(newUser._id, token.refreshToken);
+    return token;
   }
 
   private async signRefreshAndAccessTokens(userId: string, username: string) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
         {
-          sub: userid,
+          sub: userId,
           username
         },
         {
-          secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET')
+          secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+          expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+        }
+      ),
+      this.jwtService.signAsync(
+        {
+          sub: userId,
+          username
+        },
+        {
+          secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+          expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME')
         }
       )
     ]);
 
     return { accessToken, refreshToken };
+  }
+
+  private async updateRefreshToken(userId: string, refreshToken: string) {
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.usersService.update(userId, { refreshToken: hashedRefreshToken });
   }
 }
