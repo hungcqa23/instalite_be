@@ -73,4 +73,20 @@ export class AuthService {
     const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
     await this.usersService.update(userId, { refreshToken: hashedRefreshToken });
   }
+
+  public async getAuthenticatedUser(email: string, password: string) {
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new BadRequestException('Wrong credentials');
+    }
+    await this.verifyPassword(password, user.password);
+    return user;
+  }
+
+  private async verifyPassword(password: string, hashedPassword: string) {
+    const isPasswordMatching = await bcrypt.compare(password, hashedPassword);
+    if (!isPasswordMatching) {
+      throw new BadRequestException('Wrong credentials');
+    }
+  }
 }
