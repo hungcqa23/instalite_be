@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, UsePipes } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
 import { ZodValidationPipe } from 'src/pipes/zod.validation';
 import { CreateUserDto, createUserSchema } from 'src/auth/dtos/create-user.dto';
@@ -20,6 +20,8 @@ export class AuthController {
     return this.authService.logIn(logInDto);
   }
 
+  @UseGuards(AccessTokenGuard)
+  @Post('log-out')
   @UseGuards()
   @Get('refresh')
   refreshToken() {

@@ -8,6 +8,8 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
+import { GoogleAuthModule } from './google-auth/google-auth.module';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -17,7 +19,16 @@ import { AuthModule } from './auth/auth.module';
     BookmarksModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
+      envFilePath: '.env',
+      validationSchema: Joi.object({
+        DB_URI: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        PORT: Joi.number().required()
+      })
     }),
     MongooseModule.forRootAsync({
       inject: [ConfigService],
@@ -25,7 +36,8 @@ import { AuthModule } from './auth/auth.module';
         uri: configService.get<string>('DB_URI')
       })
     }),
-    AuthModule
+    AuthModule,
+    GoogleAuthModule
   ],
   controllers: [AppController],
   providers: [AppService]

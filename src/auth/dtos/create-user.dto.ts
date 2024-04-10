@@ -1,23 +1,18 @@
-import { z } from 'zod';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-export const userSchema = z
-  .object({
-    username: z.string().trim().min(2).max(100),
-    email: z.string().email(),
-    password: z.string().min(6).max(100),
-    confirmPassword: z.string().min(6).max(100),
-    refreshToken: z.string().optional()
-  })
-  .strict();
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
 
-export const createUserSchema = userSchema.superRefine(({ confirmPassword, password }, ctx) => {
-  if (confirmPassword !== password) {
-    ctx.addIssue({
-      code: 'custom',
-      message: 'Passwords do not match',
-      path: ['confirmPassword']
-    });
-  }
-});
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
-export type CreateUserDto = z.infer<typeof createUserSchema>;
+  @IsNotEmpty()
+  @IsString()
+  username: string;
+
+  @IsNotEmpty()
+  @IsString()
+  confirmPassword: string;
+}
