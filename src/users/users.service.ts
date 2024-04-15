@@ -42,4 +42,8 @@ export class UsersService {
 
     return user;
   }
+
+  public async removeRefreshToken(userId: string) {
+    await this.userModel.findOneAndUpdate({ _id: userId }, { refresh_token: null });
+  }
 }

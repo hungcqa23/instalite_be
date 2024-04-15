@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { JwtRefreshTokenGuard } from 'src/auth/jwt-refresh-token.guard';
 import { LocalAuthenticationGuard } from 'src/auth/local-authentication.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { UserMessages } from 'src/constants/messages';
@@ -14,7 +15,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
-    private readonly userService: UsersService
+    private readonly usersService: UsersService
   ) {}
 
   @Post('sign-up')
@@ -23,12 +24,7 @@ export class AuthController {
     const token = await this.authService.signUp(createUserDto);
     await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
 
-    res.cookie('refresh_token', token.refreshToken, {
-      httpOnly: true
-    });
-    res.cookie('access_token', token.accessToken, {
-      httpOnly: true
-    });
+    this.authService.sendTokenViaCookie(res, token);
 
     res.send({
       message: UserMessages.REGISTER_SUCCESSFULLY
@@ -42,21 +38,30 @@ export class AuthController {
     const { user } = req;
     const token = await this.authService.signRefreshAndAccessTokens(user._id, user.username);
 
-    res.cookie('refresh_token', token.refreshToken, {
-      httpOnly: true
-    });
-    res.cookie('access_token', token.accessToken, {
-      httpOnly: true
-    });
+    this.authService.sendTokenViaCookie(res, token);
 
     res.send({ message: UserMessages.LOGIN_SUCCESSFULLY });
   }
 
-  @UseGuards(AccessTokenGuard)
-  @Post('log-out')
   @UseGuards()
+  @Post('log-out')
+  async logOut(@Req() req: RequestWithUser, @Res() res: Response) {
+    await this.usersService.removeRefreshToken(req.user._id);
+
+    res.cookie('refresh_token', '', {
+      httpOnly: true
+    });
+
+    res.send({ message: UserMessages.LOGOUT_SUCCESSFULLY });
+  }
+
+  @UseGuards(JwtRefreshTokenGuard)
   @Get('refresh')
-  refreshToken(@Req() req: RequestWithUser) {
+  async refreshToken(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
+    const token = await this.authService.signRefreshAndAccessTokens(user._id, user.username);
+
+    this.authService.sendTokenViaCookie(res, token);
+    res.send({ message: UserMessages.REFRESH_TOKEN_SUCCESSFULLY });
   }
 }

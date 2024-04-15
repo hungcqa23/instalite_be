@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LogInDto } from 'src/auth/dtos/log-in.dto';
 import { UserMessages } from 'src/constants/messages';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,24 @@ export class AuthService {
     await this.usersService.updateRefreshToken(userId, refreshToken);
 
     return { accessToken, refreshToken };
+  }
+
+  public sendCookie(res: Response, key: string, value: string) {
+    res.cookie(key, value, {
+      httpOnly: true,
+      sameSite: 'none'
+    });
+  }
+
+  public sendTokenViaCookie(
+    res: Response,
+    token: {
+      accessToken: string;
+      refreshToken: string;
+    }
+  ) {
+    this.sendCookie(res, 'access_token', token.accessToken);
+    this.sendCookie(res, 'refresh_token', token.refreshToken);
   }
 
   private async verifyPassword(password: string, hashedPassword: string) {
