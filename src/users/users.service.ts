@@ -37,6 +37,7 @@ export class UsersService {
   }
 
   public async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    console.log(refreshToken, userId);
     const user = await this.userModel.findOne({ _id: userId, refresh_token: refreshToken });
     if (!user) throw new UnauthorizedException();
 

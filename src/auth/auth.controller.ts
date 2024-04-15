@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { JwtRefreshTokenGuard } from 'src/auth/jwt-refresh-token.guard';
+import { JwtRefreshGuard } from 'src/auth/jwt-refresh.guard';
 import { LocalAuthenticationGuard } from 'src/auth/local-authentication.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { UserMessages } from 'src/constants/messages';
@@ -55,12 +55,11 @@ export class AuthController {
     res.send({ message: UserMessages.LOGOUT_SUCCESSFULLY });
   }
 
-  @UseGuards(JwtRefreshTokenGuard)
-  @Get('refresh')
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh-token')
   async refreshToken(@Req() req: RequestWithUser, @Res() res: Response) {
     const { user } = req;
     const token = await this.authService.signRefreshAndAccessTokens(user._id, user.username);
-
     this.authService.sendTokenViaCookie(res, token);
     res.send({ message: UserMessages.REFRESH_TOKEN_SUCCESSFULLY });
   }

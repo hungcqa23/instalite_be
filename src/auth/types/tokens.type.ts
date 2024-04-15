@@ -1,3 +1,3 @@
 export interface TokenPayLoad {
-  userId: string;
+  sub: string;
 }
