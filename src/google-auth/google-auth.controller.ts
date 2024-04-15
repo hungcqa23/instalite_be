@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Req } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import TokenVerificationDto from 'src/google-auth/token-verification.dto';
-import { Request } from 'express';
+import {} from 'express';
 import { GoogleAuthService } from 'src/google-auth/google-auth.service';
 
 @Controller('google-auth')
@@ -8,10 +8,15 @@ export class GoogleAuthController {
   constructor(private readonly googleAuthService: GoogleAuthService) {}
 
   @Post()
-  async authenticate(@Body() tokenData: TokenVerificationDto, @Req() request: Request) {
-    const { accessTokenCookie, refreshTokenCookie, user } = await this.authService.authenticate(tokenData);
+  async authenticate(@Body() tokenData: TokenVerificationDto) {
+    const { user } = await this.googleAuthService.authenticate(tokenData.token);
 
-    request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie]);
+    // res.cookie('refresh_token', refreshTokenCookie, {
+    //   httpOnly: true
+    // });
+    // res.cookie('access_token', accessTokenCookie, {
+    //   httpOnly: true
+    // });
 
     return user;
   }

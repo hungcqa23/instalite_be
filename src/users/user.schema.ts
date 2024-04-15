@@ -30,6 +30,9 @@ export class User {
 
   @Prop()
   updated_at: Date;
+
+  @Prop({ default: false })
+  is_registered_via_oauth_google: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

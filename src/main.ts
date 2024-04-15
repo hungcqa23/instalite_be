@@ -6,9 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bufferLogs: true
-  });
+  const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   app.use(helmet());
   app.use(cookieParser());
@@ -21,8 +19,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
-
-  const PORT = configService.get('PORT') ?? 3000;
+  const PORT = configService.get('PORT') || 3000;
   await app.listen(PORT);
 }
 bootstrap();

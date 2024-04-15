@@ -1,32 +1,62 @@
-import { Body, Controller, Get, Post, UseGuards, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { ZodValidationPipe } from 'src/pipes/zod.validation';
-import { CreateUserDto, createUserSchema } from 'src/auth/dtos/create-user.dto';
-import { LoginBodyDto, loginBodySchema } from 'src/auth/dtos/log-in.dto';
+
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { LocalAuthenticationGuard } from 'src/auth/local-authentication.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { UserMessages } from 'src/constants/messages';
+import { EmailService } from 'src/email/email.service';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly emailService: EmailService,
+    private readonly userService: UsersService
+  ) {}
 
   @Post('sign-up')
-  @UsePipes(new ZodValidationPipe(createUserSchema))
-  signUp(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signUp(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
+    const token = await this.authService.signUp(createUserDto);
+    await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
+
+    res.cookie('refresh_token', token.refreshToken, {
+      httpOnly: true
+    });
+    res.cookie('access_token', token.accessToken, {
+      httpOnly: true
+    });
+
+    res.send({
+      message: UserMessages.REGISTER_SUCCESSFULLY
+    });
   }
 
-  @Post('sign-in')
-  @UsePipes(new ZodValidationPipe(loginBodySchema))
-  logIn(@Body() logInDto: LoginBodyDto) {
-    return this.authService.logIn(logInDto);
+  @UseGuards(LocalAuthenticationGuard)
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async logIn(@Req() req: RequestWithUser, @Res() res: Response) {
+    const { user } = req;
+    const token = await this.authService.signRefreshAndAccessTokens(user._id, user.username);
+
+    res.cookie('refresh_token', token.refreshToken, {
+      httpOnly: true
+    });
+    res.cookie('access_token', token.accessToken, {
+      httpOnly: true
+    });
+
+    res.send({ message: UserMessages.LOGIN_SUCCESSFULLY });
   }
 
   @UseGuards(AccessTokenGuard)
   @Post('log-out')
   @UseGuards()
   @Get('refresh')
-  refreshToken() {
-    const userId = req.user['sub'];
-    const refreshToken = req.user['refreshToken'];
-    return this.authService.refreshToken(userId, refreshToken);
+  refreshToken(@Req() req: RequestWithUser) {
+    const { user } = req;
   }
 }
