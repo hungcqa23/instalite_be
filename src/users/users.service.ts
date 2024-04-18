@@ -3,10 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/users/user.schema';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly filesService: FilesService
+  ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const user = await this.userModel.create(createUserDto);
@@ -46,5 +50,17 @@ export class UsersService {
 
   public async removeRefreshToken(userId: string) {
     await this.userModel.findOneAndUpdate({ _id: userId }, { refresh_token: null });
+  }
+
+  public async getUserById(id: string): Promise<UserDocument> {
+    const user = this.userModel.findOne({ _id: id });
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return user;
+  }
+
+  public async addAvatar(userId: string, fileData: Express.Multer.File) {
+    const resultUpload = await this.filesService.uploadFile(fileData);
+    await this.userModel.findOneAndUpdate({ _id: userId }, { avatar: resultUpload.Location });
+    return resultUpload.Location;
   }
 }
