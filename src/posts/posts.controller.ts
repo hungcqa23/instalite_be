@@ -1,10 +1,24 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  FileTypeValidator,
+  Get,
+  Param,
+  ParseFilePipe,
+  Patch,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { PostMessages } from 'src/constants/messages';
 import { PostsService } from 'src/posts/posts.service';
-import { CreatePostDto } from 'src/posts/type/create-post.dto';
-import { GetPostDto } from 'src/posts/type/get-post.dto';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { GetPostDto } from 'src/posts/dto/get-post.dto';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('posts')
@@ -22,6 +36,28 @@ export class PostsController {
       message: PostMessages.CREATE_POST_SUCCESSFULLY,
       post
     };
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAccessTokenGuard)
+  @UseInterceptors(FileInterceptor('media'))
+  async uploadPost(
+    @Param() { id }: GetPostDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        validators: [new FileTypeValidator({ fileType: 'image/png|image/jpeg|image/jpg|video/*' })]
+      })
+    )
+    file?: Express.Multer.File
+  ) {
+    if (file) {
+      const url_media = await this.postsService.uploadMedia(file, id);
+      return {
+        message: PostMessages.UPLOAD_MEDIA_SUCCESSFULLY,
+        url_media
+      };
+    }
   }
 
   @Get(':id')

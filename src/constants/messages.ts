@@ -12,5 +12,6 @@ export const PostMessages = {
   DELETE_POST_SUCCESSFULLY: 'Delete post successfully',
   UPDATE_POST_SUCCESSFULLY: 'Update post successfully',
   GET_POST_SUCCESSFULLY: 'Get post successfully',
-  POST_NOT_FOUND: 'Post not found'
+  POST_NOT_FOUND: 'Post not found',
+  UPLOAD_MEDIA_SUCCESSFULLY: 'Upload media successfully'
 };

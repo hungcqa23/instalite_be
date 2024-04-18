@@ -1,6 +1,6 @@
 export interface Media {
-  url: string;
   type: MediaType;
+  url: string;
 }
 
 export enum MediaType {

@@ -14,6 +14,18 @@ export class User {
   email: string;
 
   @Prop()
+  full_name: string;
+
+  @Prop({ default: 0 })
+  followers_count: number;
+
+  @Prop({ default: 0 })
+  following_count: number;
+
+  @Prop({ default: 0 })
+  posts_count: number;
+
+  @Prop()
   bio: string;
 
   @Prop()

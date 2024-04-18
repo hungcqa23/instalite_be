@@ -2,7 +2,7 @@ import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import mongoose, { Document } from 'mongoose';
 import { PostType } from 'src/constants/enum';
-import { Media, MediaType } from 'src/posts/type/media.interface';
+import { Media, MediaType } from 'src/posts/dto/media.interface';
 import { User } from 'src/users/user.schema';
 
 export type PostDocument = Post & Document;

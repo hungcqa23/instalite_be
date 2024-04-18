@@ -63,4 +63,6 @@ export class UsersService {
     await this.userModel.findOneAndUpdate({ _id: userId }, { avatar: resultUpload.Location });
     return resultUpload.Location;
   }
+
+  public async updateUser(id: string, updateUserDto: CreateUserDto) {}
 }
