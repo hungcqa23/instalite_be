@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -11,6 +23,7 @@ import { EmailService } from 'src/email/email.service';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -22,7 +35,7 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const token = await this.authService.signUp(createUserDto);
-    await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
+    // await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
 
     this.authService.sendTokenViaCookie(res, token);
 

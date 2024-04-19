@@ -53,7 +53,13 @@ export class UsersService {
   }
 
   public async getUserById(id: string): Promise<UserDocument> {
-    const user = this.userModel.findOne({ _id: id });
+    const user = this.userModel.findOne({ _id: id }).select('-password');
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    return user;
+  }
+
+  public async getUserByUsername(username: string): Promise<UserDocument> {
+    const user = this.userModel.findOne({ username }).select('-password');
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return user;
   }

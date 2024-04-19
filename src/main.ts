@@ -4,9 +4,15 @@ import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true
+    })
+  );
   const configService = app.get(ConfigService);
   app.use(helmet());
   app.use(cookieParser());

@@ -4,7 +4,8 @@ export const UserMessages = {
   NOT_FOUND: 'User not found',
   LOGOUT_SUCCESSFULLY: 'Logout successfully',
   REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully',
-  UPLOAD_AVATAR_SUCCESSFULLY: 'Upload avatar successfully'
+  UPLOAD_AVATAR_SUCCESSFULLY: 'Upload avatar successfully',
+  GET_USER_SUCCESSFULLY: 'Get user successfully'
 };
 
 export const PostMessages = {

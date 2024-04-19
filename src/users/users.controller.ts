@@ -2,6 +2,10 @@ import {
   Body,
   Controller,
   FileTypeValidator,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
   ParseFilePipe,
   Post,
   Req,
@@ -48,6 +52,27 @@ export class UsersController {
     return {
       message: UserMessages.UPLOAD_AVATAR_SUCCESSFULLY,
       url_avatar
+    };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAccessTokenGuard)
+  async getMe(@Req() req: RequestWithUser) {
+    const user = await this.usersService.getUserById(req.user._id);
+    if (!user) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      user
+    };
+  }
+
+  @Get(':username')
+  @UseGuards(JwtAccessTokenGuard)
+  async getUserByUsername(@Param('username') username: string) {
+    const user = await this.usersService.getUserByUsername(username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      user
     };
   }
 }
