@@ -12,6 +12,7 @@ import { GoogleAuthModule } from './google-auth/google-auth.module';
 import { EmailService } from './email/email.service';
 import { EmailModule } from './email/email.module';
 import { FilesModule } from './files/files.module';
+import { SearchModule } from './search/search.module';
 import * as Joi from 'joi';
 
 @Module({
@@ -48,7 +49,8 @@ import * as Joi from 'joi';
     AuthModule,
     GoogleAuthModule,
     EmailModule,
-    FilesModule
+    FilesModule,
+    SearchModule
   ],
   controllers: [AppController],
   providers: [AppService, EmailService]

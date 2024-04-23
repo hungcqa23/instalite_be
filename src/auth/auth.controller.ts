@@ -15,6 +15,7 @@ import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { JwtRefreshGuard } from 'src/auth/jwt-refresh.guard';
 import { LocalAuthenticationGuard } from 'src/auth/local-authentication.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
@@ -56,12 +57,16 @@ export class AuthController {
     res.send({ message: UserMessages.LOGIN_SUCCESSFULLY });
   }
 
-  @UseGuards()
+  @UseGuards(JwtAccessTokenGuard)
   @Post('log-out')
+  @HttpCode(HttpStatus.OK)
   async logOut(@Req() req: RequestWithUser, @Res() res: Response) {
     await this.usersService.removeRefreshToken(req.user._id);
 
-    res.cookie('refresh_token', '', {
+    res.cookie('refresh_token', null, {
+      httpOnly: true
+    });
+    res.cookie('access_token', null, {
       httpOnly: true
     });
 

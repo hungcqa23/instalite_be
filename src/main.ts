@@ -16,6 +16,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   app.use(helmet());
   app.use(cookieParser());
+  app.enableCors();
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Instalite')
@@ -25,7 +26,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
-  const PORT = configService.get('PORT') || 3000;
+  const PORT = configService.get('PORT') || 8000;
   await app.listen(PORT);
 }
 bootstrap();
