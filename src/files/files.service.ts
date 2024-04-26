@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import slash from 'slash';
 
 const MAXIMUM_BITRATE_720P = 5 * 10 ** 6; // 5Mbps
 const MAXIMUM_BITRATE_1080P = 8 * 10 ** 6; // 8Mbps
@@ -46,8 +45,7 @@ export class FilesService {
       '-show_entries',
       'stream=bit_rate',
       '-of',
-      'default=nw=1:nk=1',
-      slash(filePath)
+      'default=nw=1:nk=1'
     ]}`;
   };
 }

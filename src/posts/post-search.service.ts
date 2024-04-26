@@ -7,11 +7,11 @@ export class PostSearchService {
   constructor(private readonly elasticsearchService: ElasticsearchService) {}
 
   async searchPosts(post: Post) {
-    return this.elasticsearchService.index<Post>({
-      index: this.index,
-      body: {
-        id: post.id
-      }
-    });
+    // return this.elasticsearchService.index<Post>({
+    //   index: this.index,
+    //   body: {
+    //     id: post.id
+    //   }
+    // });
   }
 }
