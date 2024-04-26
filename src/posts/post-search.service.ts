@@ -10,8 +10,8 @@ export class PostSearchService {
     return this.elasticsearchService.index<Post>({
       index: this.index,
       body: {
-        id: ,
+        id: post.id
       }
-    })
+    });
   }
 }
