@@ -3,6 +3,13 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import slash from 'slash';
+
+const MAXIMUM_BITRATE_720P = 5 * 10 ** 6; // 5Mbps
+const MAXIMUM_BITRATE_1080P = 8 * 10 ** 6; // 8Mbps
+const MAXIMUM_BITRATE_1440P = 16 * 10 ** 6; // 16Mbps
+
 @Injectable()
 export class FilesService {
   private s3: S3;
@@ -29,5 +36,18 @@ export class FilesService {
     return await upload.done();
   }
 
-  
+  public checkVideoHasAudio = async (filePath: string) => {
+    const { $ } = await import('zx');
+    const { stdout } = await $`ffprobe ${[
+      '-v',
+      'error',
+      '-select_streams',
+      'v:0',
+      '-show_entries',
+      'stream=bit_rate',
+      '-of',
+      'default=nw=1:nk=1',
+      slash(filePath)
+    ]}`;
+  };
 }
