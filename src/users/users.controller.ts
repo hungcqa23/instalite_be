@@ -14,13 +14,16 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { UserMessages } from 'src/constants/messages';
+import { FileUploadDto } from 'src/users/dto/file-upload.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
+@ApiTags('Users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -36,7 +39,12 @@ export class UsersController {
 
   @Post('avatar')
   @UseGuards(JwtAccessTokenGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Upload avatar for user',
+    type: FileUploadDto
+  })
   async uploadFile(
     @UploadedFile(
       new ParseFilePipe({

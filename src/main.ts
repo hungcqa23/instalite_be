@@ -20,8 +20,10 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Instalite')
-    .setDescription('API for Front End Instalite')
+    .setDescription('The Instalite API description')
     .setVersion('1.0')
+    .addCookieAuth()
+    .addTag('User')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

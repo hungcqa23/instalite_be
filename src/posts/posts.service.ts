@@ -61,4 +61,8 @@ export class PostsService {
     await this.postModel.findOneAndUpdate({ _id: id }, { media: { url: result.Location, type: MediaType.IMAGE } });
     return result.Location;
   }
+
+  public async uploadVideoHLS(file: Express.Multer.File, id: string) {
+    const result = await this.filesService.saveFileToLocalStorage(file, id);
+  }
 }
