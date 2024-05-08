@@ -1,9 +1,12 @@
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import {
   Body,
   ClassSerializerInterceptor,
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Req,
   Res,
@@ -13,7 +16,6 @@ import {
 import { ApiBody, ApiConsumes, ApiCookieAuth, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { LogInDto } from 'src/auth/dtos/log-in.dto';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
@@ -29,6 +31,7 @@ import { UsersService } from 'src/users/users.service';
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly authService: AuthService,
     private readonly emailService: EmailService,
     private readonly usersService: UsersService
@@ -39,6 +42,8 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto })
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const token = await this.authService.signUp(createUserDto);
+    await this.cacheManager.set('key', 'value');
+    console.log(await this.cacheManager.get('key'));
     // await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
 
     this.authService.sendTokenViaCookie(res, token);

@@ -19,14 +19,17 @@ import { PostMessages } from 'src/constants/messages';
 import { PostsService } from 'src/posts/posts.service';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { GetPostDto } from 'src/posts/dto/get-post.dto';
-import { diskStorage } from 'multer';
-import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { ConfigService } from '@nestjs/config';
+import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly configService: ConfigService
+  ) {}
 
   @Post()
   async createNewPost(@Body() body: CreatePostDto, @Req() req: RequestWithUser) {
@@ -43,19 +46,12 @@ export class PostsController {
 
   @Patch(':id/upload-hls')
   @UseInterceptors(
-    FileInterceptor('media', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          cb(null, path.join(__dirname, '..', '..', 'uploads', req.params.id));
-        },
-        filename: (req, file, cb) => {
-          cb(null, `${filename}${extension}`);
-        }
-      })
+    LocalFilesInterceptor({
+      fieldName: 'media'
     })
   )
   async uploadVideoHLS(@Param() { id }: GetPostDto, @UploadedFile() file: Express.Multer.File) {
-    const url_media = await this.postsService.uploadVideoHLS(file, id);
+    const url_media = await this.postsService.uploadVideoHLS(file);
     return {
       message: 'TEST'
     };

@@ -3,16 +3,15 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
-
+import * as path from 'path';
 import { EncodeByResolution } from 'src/files/types/encode.type';
-import multer from 'multer';
-
-const MAXIMUM_BITRATE_720P = 5 * 10 ** 6; // 5Mbps
-const MAXIMUM_BITRATE_1080P = 8 * 10 ** 6; // 8Mbps
-const MAXIMUM_BITRATE_1440P = 16 * 10 ** 6; // 16Mbps
 
 @Injectable()
 export class FilesService {
+  MAXIMUM_BITRATE_720P = 5 * 10 ** 6; // 5Mbps
+  MAXIMUM_BITRATE_1080P = 8 * 10 ** 6; // 8Mbps
+  MAXIMUM_BITRATE_1440P = 16 * 10 ** 6; // 16Mbps
+
   private s3: S3;
 
   constructor(private readonly configService: ConfigService) {
@@ -25,8 +24,8 @@ export class FilesService {
     });
   }
   private async checkVideoHasAudio(filePath: string) {
-    const { $ } = await import('zx');
     const slash = (await import('slash')).default;
+    const { $ } = await import('zx');
     const { stdout } = await $`ffprobe ${[
       '-v',
       'error',
@@ -113,9 +112,7 @@ export class FilesService {
       '0:0'
     ];
 
-    if (isHasAudio) {
-      args.push('-map', '0:1');
-    }
+    if (isHasAudio) args.push('-map', '0:1');
 
     args.push(
       '-s:v:0',
@@ -219,6 +216,8 @@ export class FilesService {
     outputSegmentPath,
     resolution
   }: EncodeByResolution) {
+    console.log('Clg this');
+    console.log(this);
     const { $ } = await import('zx');
     const slash = (await import('slash')).default;
 
@@ -346,37 +345,47 @@ export class FilesService {
 
   public async encodeHLSWithMultipleVideoStreams(inputPath: string) {
     const [bitrate, resolution] = await Promise.all([this.getBitrate(inputPath), this.getResolution(inputPath)]);
-    const parent_folder = path.join(inputPath, '..');
-    const outputSegmentPath = path.join(parent_folder, 'v%v/fileSequence%d.ts');
-    const outputPath = path.join(parent_folder, 'v%v/prog_index.m3u8');
-    const bitrate720 = bitrate > MAXIMUM_BITRATE_720P ? MAXIMUM_BITRATE_720P : bitrate;
-    const bitrate1080 = bitrate > MAXIMUM_BITRATE_1080P ? MAXIMUM_BITRATE_1080P : bitrate;
-    const bitrate1440 = bitrate > MAXIMUM_BITRATE_1440P ? MAXIMUM_BITRATE_1440P : bitrate;
-    const isHasAudio = await this.checkVideoHasAudio(inputPath);
-    let encodeFunc = this.encodeMax720;
-    if (resolution.height > 720) {
-      encodeFunc = this.encodeMax1080;
-    }
-    if (resolution.height > 1080) {
-      encodeFunc = this.encodeMax1440;
-    }
-    if (resolution.height > 1440) {
-      encodeFunc = this.encodeMaxOriginal;
-    }
+    const parentFolder = path.join(inputPath, '..');
 
-    await encodeFunc({
-      bitrate: {
-        720: bitrate720,
-        1080: bitrate1080,
-        1440: bitrate1440,
-        original: bitrate
-      },
-      inputPath,
-      isHasAudio,
-      outputPath,
-      outputSegmentPath,
-      resolution
-    });
+    const outputSegmentPath = path.join(parentFolder, 'v%v/fileSequence%d.ts');
+    const outputPath = path.join(parentFolder, 'v%v/prog_index.m3u8');
+    const bitrate720 = bitrate > this.MAXIMUM_BITRATE_720P ? this.MAXIMUM_BITRATE_720P : bitrate;
+    const bitrate1080 = bitrate > this.MAXIMUM_BITRATE_1080P ? this.MAXIMUM_BITRATE_1080P : bitrate;
+    const bitrate1440 = bitrate > this.MAXIMUM_BITRATE_1440P ? this.MAXIMUM_BITRATE_1440P : bitrate;
+    const isHasAudio = await this.checkVideoHasAudio(inputPath);
+
+    if (resolution.height > 1440)
+      this.encodeMaxOriginal({
+        bitrate: {
+          720: bitrate720,
+          1080: bitrate1080,
+          1440: bitrate1440,
+          original: bitrate
+        },
+        inputPath,
+        isHasAudio,
+        outputPath,
+        outputSegmentPath,
+        resolution
+      });
+    else if (resolution.height > 720)
+      this.encodeMax1080({
+        bitrate: { 720: bitrate720, 1080: bitrate1080, 1440: bitrate1440, original: bitrate },
+        inputPath,
+        isHasAudio,
+        outputPath,
+        outputSegmentPath,
+        resolution
+      });
+    else
+      this.encodeMax720({
+        bitrate: { 720: bitrate720, 1080: bitrate1080, 1440: bitrate1440, original: bitrate },
+        inputPath,
+        isHasAudio,
+        outputPath,
+        outputSegmentPath,
+        resolution
+      });
 
     return true;
   }
@@ -393,6 +402,4 @@ export class FilesService {
     });
     return await upload.done();
   }
-
-  public async saveFileToLocalStorage(file: Express.Multer.File, id: string) {}
 }

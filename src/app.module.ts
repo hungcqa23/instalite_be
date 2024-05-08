@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { LikesModule } from './likes/likes.module';
@@ -12,14 +11,15 @@ import { EmailService } from './email/email.service';
 import { EmailModule } from './email/email.module';
 import { FilesModule } from './files/files.module';
 import { SearchModule } from './search/search.module';
+import { FollowsModule } from './follows/follows.module';
+import { CacheModule } from '@nestjs/cache-manager';
 import * as Joi from 'joi';
+import { redisStore } from 'cache-manager-redis-store';
 
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 @Module({
   imports: [
-    UsersModule,
-    PostsModule,
-    LikesModule,
-    BookmarksModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -35,22 +35,53 @@ import * as Joi from 'joi';
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_SECRET_ACCESS_KEY: Joi.string().required(),
         AWS_REGION: Joi.string().required(),
+        AWS_BUCKET_NAME: Joi.string().required(),
         SES_FROM_ADDRESS: Joi.string().required(),
-        PORT: Joi.number().required()
+        PORT: Joi.number().required(),
+        UPLOAD_DIR: Joi.string().required(),
+        REDIS_URI: Joi.string().required(),
+        CACHE_TTL: Joi.number().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required()
       })
     }),
+    CacheModule.registerAsync({
+      inject: [ConfigService],
+      imports: [ConfigModule],
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      useFactory: async (configService: ConfigService) => ({
+        store: await redisStore({
+          ttl: configService.get<number>('CACHE_TTL'),
+          socket: {
+            host: configService.get<string>('REDIS_HOST'),
+            port: configService.get<number>('REDIS_PORT')
+          }
+        })
+      })
+    }),
+
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('DB_URI')
       })
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true
+    }),
     AuthModule,
     GoogleAuthModule,
     EmailModule,
     FilesModule,
-    SearchModule
+    SearchModule,
+    FollowsModule,
+    UsersModule,
+    PostsModule,
+    LikesModule,
+    BookmarksModule
   ],
-  providers: [AppService, EmailService]
+  providers: [EmailService]
 })
 export class AppModule {}

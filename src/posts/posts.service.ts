@@ -62,7 +62,7 @@ export class PostsService {
     return result.Location;
   }
 
-  public async uploadVideoHLS(file: Express.Multer.File, id: string) {
-    const result = await this.filesService.saveFileToLocalStorage(file, id);
+  public async uploadVideoHLS(file: Express.Multer.File) {
+    await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
   }
 }
