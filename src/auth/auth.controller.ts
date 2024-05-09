@@ -42,8 +42,6 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto })
   async signUp(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const token = await this.authService.signUp(createUserDto);
-    await this.cacheManager.set('key', 'value');
-    console.log(await this.cacheManager.get('key'));
     // await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
 
     this.authService.sendTokenViaCookie(res, token);

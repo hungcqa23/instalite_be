@@ -1,19 +1,26 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Cache } from 'cache-manager';
 import { User, UserDocument } from 'src/users/user.schema';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { FilesService } from 'src/files/files.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly filesService: FilesService
   ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
     const user = await this.userModel.create(createUserDto);
+    const userId = user._id.toString();
+    const userJSON = JSON.stringify(user);
+    await this.cacheManager.set(userId, userJSON);
     return user;
   }
 
@@ -70,5 +77,13 @@ export class UsersService {
     return resultUpload.Location;
   }
 
-  public async updateUser(id: string, updateUserDto: CreateUserDto) {}
+  public async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.userModel.findOneAndUpdate(
+      { _id: id },
+      {
+        ...updateUserDto
+      }
+    );
+    return user;
+  }
 }

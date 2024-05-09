@@ -18,11 +18,11 @@ export class AuthService {
 
   public async signUp(createUserDto: CreateUserDto) {
     // Hash password
-    const hash = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     try {
       const newUser = await this.usersService.create({
         ...createUserDto,
-        password: hash
+        password: hashedPassword
       });
       const token = await this.signRefreshAndAccessTokens(newUser._id, newUser.username);
       await this.usersService.updateRefreshToken(newUser._id, token.refreshToken);

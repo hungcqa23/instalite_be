@@ -46,6 +46,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       })
     }),
     CacheModule.registerAsync({
+      isGlobal: true,
       inject: [ConfigService],
       imports: [ConfigModule],
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,21 +57,22 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
           socket: {
             host: configService.get<string>('REDIS_HOST'),
             port: configService.get<number>('REDIS_PORT')
-          }
+          },
+          url: configService.get<string>('REDIS_URI')
         })
       })
     }),
-
     MongooseModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('DB_URI')
       })
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
-      driver: ApolloDriver,
-      playground: true
-    }),
+    // GraphQLModule.forRoot<ApolloDriverConfig>({
+    //   driver: ApolloDriver,
+    //   playground: true,
+    //   autoSchemaFile: true
+    // }),
     AuthModule,
     GoogleAuthModule,
     EmailModule,
