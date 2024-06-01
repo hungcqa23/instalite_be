@@ -15,9 +15,9 @@ import { FollowsModule } from './follows/follows.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as Joi from 'joi';
 import { redisStore } from 'cache-manager-redis-store';
-
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -5,7 +5,11 @@ export const UserMessages = {
   LOGOUT_SUCCESSFULLY: 'Logout successfully',
   REFRESH_TOKEN_SUCCESSFULLY: 'Refresh token successfully',
   UPLOAD_AVATAR_SUCCESSFULLY: 'Upload avatar successfully',
-  GET_USER_SUCCESSFULLY: 'Get user successfully'
+  GET_USER_SUCCESSFULLY: 'Get user successfully',
+  FOLLOW_SUCCESSFULLY: 'Follow successfully',
+  UNFOLLOW_SUCCESSFULLY: 'Unfollow successfully',
+  ALREADY_FOLLOWED: 'User has already followed',
+  ALREADY_UNFOLLOWED: 'User has already unfollowed'
 };
 
 export const PostMessages = {

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   HttpException,
@@ -9,17 +10,21 @@ import {
   ParseFilePipe,
   Post,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { UserMessages } from 'src/constants/messages';
+import { CreateFollowDto } from 'src/users/dto/create-follow.dto';
 import { FileUploadDto } from 'src/users/dto/file-upload.dto';
+import { UnFollowDto } from 'src/users/dto/un-follow-dto';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
@@ -82,5 +87,25 @@ export class UsersController {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
     };
+  }
+
+  @Post('follow')
+  @UseGuards(JwtAccessTokenGuard)
+  async follow(@Req() req: RequestWithUser, @Body() createFollowDto: CreateFollowDto, @Res() res: Response) {
+    const result = await this.usersService.createFollow(req.user._id, createFollowDto.followedUserId);
+
+    return res.status(HttpStatus.CREATED).json({
+      message: result
+    });
+  }
+
+  @Delete('follow')
+  @UseGuards(JwtAccessTokenGuard)
+  async unfollow(@Req() req: RequestWithUser, @Body() unfollowDto: UnFollowDto, @Res() res: Response) {
+    const result = await this.usersService.unfollow(req.user._id, unfollowDto.followedUserId);
+
+    return res.status(204).json({
+      message: result
+    });
   }
 }

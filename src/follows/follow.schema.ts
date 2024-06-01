@@ -9,7 +9,7 @@ export class Follow {
   user_id: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  following_id: Types.ObjectId;
+  followed_user_id: Types.ObjectId;
 
   @Prop({ type: Date, default: Date.now })
   created_at: Date;

@@ -1,36 +1,31 @@
-import { Controller } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Follow, FollowDocument } from 'src/follows/follow.schema';
-import { User, UserDocument } from 'src/users/user.schema';
+import { Body, Controller, Delete, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { UserMessages } from 'src/constants/messages';
+import { CreateFollowDto } from 'src/users/dto/create-follow.dto';
+import { UnFollowDto } from 'src/users/dto/un-follow-dto';
+import { FollowsService } from 'src/follows/follows.service';
 
+@UseGuards(JwtAccessTokenGuard)
 @Controller('follows')
 export class FollowsController {
-  constructor(
-    @InjectModel(Follow.name) private readonly followModel: Model<FollowDocument>,
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>
-  ) {}
+  constructor(private readonly followsService: FollowsService) {}
 
-  async follow(userId: string, followingId: string) {
-    const follow = await this.followModel.create({
-      user_id: userId,
-      following_id: followingId
+  @Post()
+  async follow(@Req() req: RequestWithUser, @Body() createFollowDto: CreateFollowDto, @Res() res: Response) {
+    const result = await this.followsService.createFollow(req.user._id, createFollowDto.followedUserId);
+
+    return res.send({
+      message: UserMessages.FOLLOW_SUCCESSFULLY,
+      data: {
+        result
+      }
     });
+  }
 
-    await Promise.all([
-      this.userModel.findOneAndUpdate(
-        { _id: userId },
-        {
-          $inc: { following_count: 1 }
-        }
-      ),
-      this.userModel.findOneAndUpdate(
-        { _id: followingId },
-        {
-          $inc: { follower_count: 1 }
-        }
-      )
-    ]);
-    return follow;
+  @Delete()
+  async unfollow(@Req() req: RequestWithUser, @Body() unFollowDto: UnFollowDto) {
+    const result = await this.followsService.unfollow(req.user._id, unFollowDto.followedUserId);
   }
 }

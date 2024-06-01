@@ -7,11 +7,14 @@ import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { FilesService } from 'src/files/files.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { Follow, FollowDocument } from 'src/follows/follow.schema';
+import { UserMessages } from 'src/constants/messages';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Follow.name) private readonly followModel: Model<FollowDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly filesService: FilesService
   ) {}
@@ -85,5 +88,60 @@ export class UsersService {
       }
     );
     return user;
+  }
+
+  public async createFollow(userId: string, followedUserId: string) {
+    const follow = await this.followModel.findOne({
+      user_id: userId,
+      followed_user_id: followedUserId
+    });
+    if (follow) return UserMessages.ALREADY_FOLLOWED;
+
+    await this.followModel.create({
+      user_id: userId,
+      followed_user_id: followedUserId
+    });
+
+    await Promise.all([
+      this.userModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          $inc: { following_count: 1 }
+        }
+      ),
+      this.userModel.findOneAndUpdate(
+        { _id: followedUserId },
+        {
+          $inc: { follower_count: 1 }
+        }
+      )
+    ]);
+
+    return UserMessages.FOLLOW_SUCCESSFULLY;
+  }
+
+  public async unfollow(userId: string, unFollowedUserId: string) {
+    const unfollow = await this.followModel.findOne({
+      user_id: userId,
+      followed_user_id: unFollowedUserId
+    });
+    if (!unfollow) return UserMessages.ALREADY_UNFOLLOWED;
+
+    await Promise.all([
+      this.userModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          $inc: { following_count: -1 }
+        }
+      ),
+      this.userModel.findOneAndUpdate(
+        { _id: unFollowedUserId },
+        {
+          $inc: { follower_count: -1 }
+        }
+      )
+    ]);
+
+    return UserMessages.UNFOLLOW_SUCCESSFULLY;
   }
 }
