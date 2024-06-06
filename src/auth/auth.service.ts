@@ -83,8 +83,7 @@ export class AuthService {
 
   public sendCookie(res: Response, key: string, value: string) {
     res.cookie(key, value, {
-      httpOnly: true,
-      sameSite: 'none'
+      httpOnly: true
     });
   }
 

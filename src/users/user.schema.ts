@@ -47,4 +47,12 @@ export class User {
   is_registered_via_oauth_google: boolean;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index(
+  { username: 'text' },
+  {
+    default_language: 'none'
+  }
+);
+
+export { UserSchema };

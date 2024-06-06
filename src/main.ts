@@ -27,7 +27,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // NOTE: Add Cors
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  });
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('API Instalite')

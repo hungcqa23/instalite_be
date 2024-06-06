@@ -9,6 +9,7 @@ import {
   Param,
   ParseFilePipe,
   Post,
+  Query,
   Req,
   Res,
   UploadedFile,
@@ -86,6 +87,16 @@ export class UsersController {
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
+    };
+  }
+
+  @Get()
+  @UseGuards(JwtAccessTokenGuard)
+  async getAllUsers(@Query('username') username?: string) {
+    const users = await this.usersService.searchUsersByUsername(username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      users
     };
   }
 

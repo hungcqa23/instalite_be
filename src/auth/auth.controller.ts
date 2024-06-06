@@ -60,8 +60,8 @@ export class AuthController {
     const token = await this.authService.signRefreshAndAccessTokens(user._id, user.username);
 
     this.authService.sendTokenViaCookie(res, token);
-
-    res.send({ message: UserMessages.LOGIN_SUCCESSFULLY });
+    user.password = undefined;
+    res.send({ message: UserMessages.LOGIN_SUCCESSFULLY, data: user });
   }
 
   @UseGuards(JwtAccessTokenGuard)

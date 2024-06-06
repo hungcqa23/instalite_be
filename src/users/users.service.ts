@@ -7,8 +7,8 @@ import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { FilesService } from 'src/files/files.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { Follow, FollowDocument } from 'src/follows/follow.schema';
 import { UserMessages } from 'src/constants/messages';
+import { Follow, FollowDocument } from 'src/users/follow.schema';
 
 @Injectable()
 export class UsersService {
@@ -72,6 +72,20 @@ export class UsersService {
     const user = this.userModel.findOne({ username }).select('-password');
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return user;
+  }
+
+  public async searchUsersByUsername(username?: string): Promise<UserDocument[]> {
+    // I want to search users array by username
+    if (!username) return [];
+    // i for case insensitive
+    const regex = new RegExp(username, 'i');
+    const users = await this.userModel
+      .find({
+        username: { $regex: regex }
+      })
+      .select('-password');
+
+    return users;
   }
 
   public async addAvatar(userId: string, fileData: Express.Multer.File) {
