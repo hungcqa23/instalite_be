@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cache } from 'cache-manager';
+import { Types } from 'mongoose';
 import { User, UserDocument } from 'src/users/user.schema';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { FilesService } from 'src/files/files.service';
@@ -9,6 +10,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UserMessages } from 'src/constants/messages';
 import { Follow, FollowDocument } from 'src/users/follow.schema';
+import { NotificationDocument, Notification } from 'src/users/notification.schema';
+import { NotificationType } from 'src/constants/enum';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +19,8 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Follow.name) private readonly followModel: Model<FollowDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly filesService: FilesService
+    private readonly filesService: FilesService,
+    @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>
   ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -69,7 +73,7 @@ export class UsersService {
   }
 
   public async getUserByUsername(username: string): Promise<UserDocument> {
-    const user = this.userModel.findOne({ username }).select('-password');
+    const user = this.userModel.findOne({ username }).select('-password -refresh_token');
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return user;
   }
@@ -83,8 +87,8 @@ export class UsersService {
       .find({
         username: { $regex: regex }
       })
-      .select('-password');
-
+      .select('-password -refresh_token');
+    console.log(users);
     return users;
   }
 
@@ -128,14 +132,20 @@ export class UsersService {
         {
           $inc: { follower_count: 1 }
         }
-      )
+      ),
+      this.notificationModel.create({
+        user_id: userId,
+        user_receiver_id: followedUserId,
+        type: NotificationType.Follow,
+        content: UserMessages.FOLLOW_SUCCESSFULLY
+      })
     ]);
 
     return UserMessages.FOLLOW_SUCCESSFULLY;
   }
 
   public async unfollow(userId: string, unFollowedUserId: string) {
-    const unfollow = await this.followModel.findOne({
+    const unfollow = await this.followModel.findOneAndDelete({
       user_id: userId,
       followed_user_id: unFollowedUserId
     });
@@ -157,5 +167,23 @@ export class UsersService {
     ]);
 
     return UserMessages.UNFOLLOW_SUCCESSFULLY;
+  }
+
+  public async getRecommendUsers(userId: string) {
+    // Find list of user who I'm currently following
+    const following = await this.followModel.find({
+      user_id: userId
+    });
+    const followingIds = following.map(follow => follow.followed_user_id);
+    console.log(followingIds);
+    // Exclude the user who I'm currently following
+    const users = await this.userModel
+      .find({
+        _id: { $nin: followingIds }
+      })
+      .select('-password')
+      .limit(4);
+
+    return users;
   }
 }

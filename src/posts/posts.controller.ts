@@ -1,8 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseFilePipe,
   Patch,
@@ -19,7 +22,6 @@ import { PostMessages } from 'src/constants/messages';
 import { PostsService } from 'src/posts/posts.service';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { GetPostDto } from 'src/posts/dto/get-post.dto';
-import * as path from 'node:path';
 import { ConfigService } from '@nestjs/config';
 import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
 
@@ -85,6 +87,15 @@ export class PostsController {
     return {
       message: PostMessages.GET_POST_SUCCESSFULLY,
       post
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deletePost(@Param() { id }: GetPostDto, @Req() req: RequestWithUser) {
+    await this.postsService.deletePost(id, req.user.id);
+    return {
+      message: PostMessages.DELETE_POST_SUCCESSFULLY
     };
   }
 }

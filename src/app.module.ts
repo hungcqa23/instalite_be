@@ -16,6 +16,7 @@ import * as Joi from 'joi';
 import { redisStore } from 'cache-manager-redis-store';
 // import { GraphQLModule } from '@nestjs/graphql';
 // import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -80,7 +81,8 @@ import { redisStore } from 'cache-manager-redis-store';
     UsersModule,
     PostsModule,
     LikesModule,
-    BookmarksModule
+    BookmarksModule,
+    NotificationsModule
   ],
   providers: [EmailService]
 })

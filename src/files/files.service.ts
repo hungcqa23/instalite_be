@@ -402,4 +402,8 @@ export class FilesService {
     });
     return await upload.done();
   }
+
+  public async deleteFile(url: string) {
+    this.s3.deleteObject({ Bucket: this.configService.get<string>('AWS_BUCKET_NAME'), Key: url });
+  }
 }

@@ -65,4 +65,13 @@ export class PostsService {
   public async uploadVideoHLS(file: Express.Multer.File) {
     await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
   }
+
+  public async deletePost(id: string, userId: string) {
+    const post = await this.postModel.findOneAndDelete({ _id: id, user_id: userId });
+    console.log(post);
+    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+
+    await Promise.all([this.userModel.findOneAndUpdate({ _id: post.user_id }, { $inc: { posts_count: -1 } })]);
+    return post;
+  }
 }

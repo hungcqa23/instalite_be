@@ -33,14 +33,19 @@ import { UsersService } from 'src/users/users.service';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  // @Get()
-  // signIn(@Body() logInDto: LogInDto) {
-  //   return this.usersService.findOne(logInDto.username);
-  // }
-
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Get()
+  @UseGuards(JwtAccessTokenGuard)
+  async getAllUsers(@Query('username') username?: string) {
+    const users = await this.usersService.searchUsersByUsername(username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      users
+    };
   }
 
   @Post('avatar')
@@ -80,6 +85,16 @@ export class UsersController {
     };
   }
 
+  @Get('recommend')
+  @UseGuards(JwtAccessTokenGuard)
+  async getRecommendUsers(@Req() req: RequestWithUser) {
+    const users = await this.usersService.getRecommendUsers(req.user._id);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      users
+    };
+  }
+
   @Get(':username')
   @UseGuards(JwtAccessTokenGuard)
   async getUserByUsername(@Param('username') username: string) {
@@ -87,16 +102,6 @@ export class UsersController {
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
-    };
-  }
-
-  @Get()
-  @UseGuards(JwtAccessTokenGuard)
-  async getAllUsers(@Query('username') username?: string) {
-    const users = await this.usersService.searchUsersByUsername(username);
-    return {
-      message: UserMessages.GET_USER_SUCCESSFULLY,
-      users
     };
   }
 
