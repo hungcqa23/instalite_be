@@ -67,7 +67,8 @@ export class PostsService {
   }
 
   public async uploadVideoHLS(file: Express.Multer.File) {
-    await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
+    const path = await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
+    return path;
   }
 
   public async deletePost(id: string, userId: string) {

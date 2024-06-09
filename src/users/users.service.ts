@@ -137,7 +137,7 @@ export class UsersService {
       this.userModel.findOneAndUpdate(
         { _id: followedUserId },
         {
-          $inc: { follower_count: 1 }
+          $inc: { followers_count: 1 }
         }
       ),
       this.notificationModel.create({
@@ -168,7 +168,7 @@ export class UsersService {
       this.userModel.findOneAndUpdate(
         { _id: unFollowedUserId },
         {
-          $inc: { follower_count: -1 }
+          $inc: { followers_count: -1 }
         }
       )
     ]);

@@ -406,4 +406,14 @@ export class FilesService {
   public async deleteFile(url: string) {
     this.s3.deleteObject({ Bucket: this.configService.get<string>('AWS_BUCKET_NAME'), Key: url });
   }
+
+  public getMasterM3U8(id: string) {
+    const pathName = path.resolve(this.configService.get<string>('UPLOAD_DIR'), `${id}/master.m3u8`);
+    return pathName;
+  }
+
+  public getSegment(id: string, v: string, segment: string) {
+    const pathName = path.resolve(this.configService.get<string>('UPLOAD_DIR'), `${id}/${v}/${segment}`);
+    return pathName;
+  }
 }
