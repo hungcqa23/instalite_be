@@ -49,9 +49,9 @@ export class PostsController {
     })
   )
   async uploadVideoHLS(@Param() { id }: GetPostDto, @UploadedFile() file: Express.Multer.File) {
-    const url_media = await this.postsService.uploadVideoHLS(file);
+    const url_media = await this.postsService.uploadVideoHLS(file, id);
     return {
-      message: 'TEST'
+      message: url_media
     };
   }
 

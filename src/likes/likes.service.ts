@@ -38,7 +38,10 @@ export class LikesService {
   }
 
   async unlikePost(userId: string, postId: string) {
-    if (this.isLikedPost(userId, postId))
+    console.log(userId);
+    console.log(postId);
+
+    if (await this.isLikedPost(userId, postId))
       await this.postModel.findByIdAndUpdate(postId, {
         $inc: {
           likes: -1

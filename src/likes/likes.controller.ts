@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { LikePostDto } from 'src/likes/dto/like.dto';
@@ -12,6 +12,7 @@ export class LikesController {
   @Post()
   public async likePost(@Req() req: RequestWithUser, @Body() likePostDto: LikePostDto) {
     const result = await this.likesService.likePost(req.user._id, likePostDto.postId);
+    console.log('Hello World!');
 
     return {
       message: 'Liked post',
@@ -20,9 +21,8 @@ export class LikesController {
   }
 
   @Delete()
-  public async unlikePost(@Req() req: RequestWithUser, @Param('postId') postId: string) {
-    const result = await this.likesService.unlikePost(req.user._id, postId);
-
+  public async unlikePost(@Req() req: RequestWithUser, @Body() unlikePostDto: LikePostDto) {
+    const result = await this.likesService.unlikePost(req.user._id, unlikePostDto.postId);
     return {
       message: 'Unliked post',
       result

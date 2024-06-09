@@ -66,9 +66,10 @@ export class PostsService {
     return result.Location;
   }
 
-  public async uploadVideoHLS(file: Express.Multer.File) {
-    const path = await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
-    return path;
+  public async uploadVideoHLS(file: Express.Multer.File, postId: string) {
+    await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
+    await this.postModel.findOneAndUpdate({ _id: postId }, { media: { url: file.path, type: MediaType.VIDEO } });
+    return file.path;
   }
 
   public async deletePost(id: string, userId: string) {
