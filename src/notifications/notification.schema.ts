@@ -1,4 +1,3 @@
-import { Type } from '@nestjs/common';
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { NotificationType } from 'src/constants/enum';

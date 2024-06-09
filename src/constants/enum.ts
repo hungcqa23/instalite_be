@@ -1,6 +1,7 @@
 export enum PostType {
   NewPost,
-  RePost
+  RePost,
+  Comment
 }
 
 export enum NotificationType {

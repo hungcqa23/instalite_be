@@ -1,8 +1,18 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(250)
   bio: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(250)
+  username: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(250)
+  fullName: string;
 }

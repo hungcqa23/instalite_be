@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   ParseFilePipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -26,6 +27,7 @@ import { UserMessages } from 'src/constants/messages';
 import { CreateFollowDto } from 'src/users/dto/create-follow.dto';
 import { FileUploadDto } from 'src/users/dto/file-upload.dto';
 import { UnFollowDto } from 'src/users/dto/un-follow-dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
@@ -48,7 +50,7 @@ export class UsersController {
     };
   }
 
-  @Post('avatar')
+  @Patch('avatar')
   @UseGuards(JwtAccessTokenGuard)
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data')
@@ -66,11 +68,11 @@ export class UsersController {
     file: Express.Multer.File,
     @Req() req: RequestWithUser
   ) {
-    const url_avatar = await this.usersService.addAvatar(req.user._id, file);
+    const user = await this.usersService.addAvatar(req.user._id, file);
 
     return {
       message: UserMessages.UPLOAD_AVATAR_SUCCESSFULLY,
-      url_avatar
+      result: user
     };
   }
 
@@ -82,6 +84,16 @@ export class UsersController {
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
+    };
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAccessTokenGuard)
+  async updateMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.usersService.updateUser(req.user._id, updateUserDto);
+    return {
+      message: UserMessages.UPDATE_USER_SUCCESSFULLY,
+      result: user
     };
   }
 

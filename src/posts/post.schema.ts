@@ -32,11 +32,17 @@ export class Post {
   )
   media: Media;
 
-  @Prop({ required: true, default: Date.now })
-  created_at: Date;
+  @Prop({ required: true, default: 0 })
+  likes: number;
+
+  @Prop({ required: true, default: 0 })
+  comments: number;
 
   @Prop({ required: true, default: Date.now })
   updated_at: Date;
+
+  @Prop({ required: true, default: Date.now })
+  created_at: Date;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

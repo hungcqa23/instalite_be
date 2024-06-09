@@ -3,17 +3,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostMessages } from 'src/constants/messages';
 import { FilesService } from 'src/files/files.service';
-import { PostDocument } from 'src/posts/post.schema';
+import { Post, PostDocument } from 'src/posts/post.schema';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { MediaType } from 'src/posts/dto/media.interface';
-import { UserDocument } from 'src/users/user.schema';
+import { User, UserDocument } from 'src/users/user.schema';
+import { Like, LikeDocument } from 'src/likes/like.schema';
+import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
+import { PostType } from 'src/constants/enum';
 
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectModel('Post') private readonly postModel: Model<PostDocument>,
     private readonly filesService: FilesService,
-    @InjectModel('User') private readonly userModel: Model<UserDocument>
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
+    @InjectModel(BookMark.name) private readonly bookMarkModel: Model<BookMarkDocument>
   ) {}
 
   public async create(postBody: CreatePostDto & { user_id: string }): Promise<PostDocument> {
@@ -54,7 +59,6 @@ export class PostsService {
     const result = await this.filesService.uploadFile(file);
     if (file.mimetype === 'video/*') {
       await this.postModel.findOneAndUpdate({ _id: id }, { media: { url: result.Location, type: MediaType.VIDEO } });
-
       return result.Location;
     }
 
@@ -68,10 +72,24 @@ export class PostsService {
 
   public async deletePost(id: string, userId: string) {
     const post = await this.postModel.findOneAndDelete({ _id: id, user_id: userId });
-    console.log(post);
     if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    await Promise.all([this.userModel.findOneAndUpdate({ _id: post.user_id }, { $inc: { posts_count: -1 } })]);
+    await Promise.all([
+      this.userModel.findOneAndUpdate({ _id: post.user_id }, { $inc: { posts_count: -1 } }),
+      this.likeModel.deleteMany({ post_id: id }),
+      this.bookMarkModel.deleteMany({ post_id: id }),
+      this.postModel.deleteMany({ parent_post_id: id })
+    ]);
     return post;
+  }
+
+  public async getAllPosts() {
+    const posts = await this.postModel.find({});
+    return posts;
+  }
+
+  public async getComments(id: string) {
+    const comments = await this.postModel.find({ parent_post_id: id, type_post: PostType.Comment });
+    return comments;
   }
 }

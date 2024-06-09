@@ -9,7 +9,8 @@ export const UserMessages = {
   FOLLOW_SUCCESSFULLY: 'Follow successfully',
   UNFOLLOW_SUCCESSFULLY: 'Unfollow successfully',
   ALREADY_FOLLOWED: 'User has already followed',
-  ALREADY_UNFOLLOWED: 'User has already unfollowed'
+  ALREADY_UNFOLLOWED: 'User has already unfollowed',
+  UPDATE_USER_SUCCESSFULLY: 'Update user successfully'
 };
 
 export const PostMessages = {
@@ -18,5 +19,7 @@ export const PostMessages = {
   UPDATE_POST_SUCCESSFULLY: 'Update post successfully',
   GET_POST_SUCCESSFULLY: 'Get post successfully',
   POST_NOT_FOUND: 'Post not found',
-  UPLOAD_MEDIA_SUCCESSFULLY: 'Upload media successfully'
+  UPLOAD_MEDIA_SUCCESSFULLY: 'Upload media successfully',
+  GET_ALL_POSTS_SUCCESSFULLY: 'Get all posts successfully',
+  GET_COMMENTS_SUCCESSFULLY: 'Get comments successfully'
 };

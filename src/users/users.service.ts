@@ -2,7 +2,6 @@ import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cache } from 'cache-manager';
-import { Types } from 'mongoose';
 import { User, UserDocument } from 'src/users/user.schema';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
 import { FilesService } from 'src/files/files.service';
@@ -10,7 +9,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UserMessages } from 'src/constants/messages';
 import { Follow, FollowDocument } from 'src/users/follow.schema';
-import { NotificationDocument, Notification } from 'src/users/notification.schema';
+import { NotificationDocument, Notification } from 'src/notifications/notification.schema';
 import { NotificationType } from 'src/constants/enum';
 
 @Injectable()
@@ -18,9 +17,9 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Follow.name) private readonly followModel: Model<FollowDocument>,
+    @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private readonly filesService: FilesService,
-    @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>
+    private readonly filesService: FilesService
   ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -88,22 +87,30 @@ export class UsersService {
         username: { $regex: regex }
       })
       .select('-password -refresh_token');
-    console.log(users);
+
     return users;
   }
 
   public async addAvatar(userId: string, fileData: Express.Multer.File) {
     const resultUpload = await this.filesService.uploadFile(fileData);
-    await this.userModel.findOneAndUpdate({ _id: userId }, { avatar: resultUpload.Location });
-    return resultUpload.Location;
+    const user = await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { avatar: resultUpload.Location },
+      { new: true }
+    );
+    return user;
   }
 
   public async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findOneAndUpdate(
       { _id: id },
       {
-        ...updateUserDto
-      }
+        ...updateUserDto,
+        username: updateUserDto?.username?.toLowerCase(),
+        full_name: updateUserDto?.fullName,
+        updated_at: new Date()
+      },
+      { new: true }
     );
     return user;
   }
@@ -174,7 +181,7 @@ export class UsersService {
     const following = await this.followModel.find({
       user_id: userId
     });
-    const followingIds = following.map(follow => follow.followed_user_id);
+    const followingIds = [following.map(follow => follow.followed_user_id), userId];
     console.log(followingIds);
     // Exclude the user who I'm currently following
     const users = await this.userModel

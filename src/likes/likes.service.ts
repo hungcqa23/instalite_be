@@ -1,12 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { LikeDocument } from 'src/likes/like.schema';
+import { Like, LikeDocument } from 'src/likes/like.schema';
+import { Post, PostDocument } from 'src/posts/post.schema';
 
 @Injectable()
 export class LikesService {
-  constructor(@InjectModel('Like') private readonly likeModel: Model<LikeDocument>) {}
+  constructor(
+    @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
+    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>
+  ) {}
   async likePost(userId: string, postId: string) {
+    if (!(await this.isLikedPost(userId, postId))) {
+      await this.postModel.findByIdAndUpdate(postId, {
+        $inc: {
+          likes: 1
+        }
+      });
+    }
+
     const result = await this.likeModel.findOneAndUpdate(
       {
         user_id: userId,
@@ -17,7 +29,8 @@ export class LikesService {
         post_id: postId
       },
       {
-        upsert: true
+        upsert: true,
+        new: true
       }
     );
 
@@ -25,9 +38,27 @@ export class LikesService {
   }
 
   async unlikePost(userId: string, postId: string) {
-    return await this.likeModel.findOneAndDelete({
+    if (this.isLikedPost(userId, postId))
+      await this.postModel.findByIdAndUpdate(postId, {
+        $inc: {
+          likes: -1
+        }
+      });
+
+    const result = await this.likeModel.findOneAndDelete({
       user_id: userId,
       post_id: postId
     });
+
+    return result;
+  }
+
+  async isLikedPost(userId: string, postId: string) {
+    const result = await this.likeModel.findOne({
+      user_id: userId,
+      post_id: postId
+    });
+    console.log(result);
+    return result ? true : false;
   }
 }

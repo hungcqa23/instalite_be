@@ -14,8 +14,6 @@ import { SearchModule } from './search/search.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as Joi from 'joi';
 import { redisStore } from 'cache-manager-redis-store';
-// import { GraphQLModule } from '@nestjs/graphql';
-// import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
@@ -68,11 +66,6 @@ import { NotificationsModule } from './notifications/notifications.module';
         uri: configService.get<string>('DB_URI')
       })
     }),
-    // GraphQLModule.forRoot<ApolloDriverConfig>({
-    //   driver: ApolloDriver,
-    //   playground: true,
-    //   autoSchemaFile: true
-    // }),
     AuthModule,
     GoogleAuthModule,
     EmailModule,

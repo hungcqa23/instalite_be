@@ -22,16 +22,12 @@ import { PostMessages } from 'src/constants/messages';
 import { PostsService } from 'src/posts/posts.service';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { GetPostDto } from 'src/posts/dto/get-post.dto';
-import { ConfigService } from '@nestjs/config';
 import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('posts')
 export class PostsController {
-  constructor(
-    private readonly postsService: PostsService,
-    private readonly configService: ConfigService
-  ) {}
+  constructor(private readonly postsService: PostsService) {}
 
   @Post()
   async createNewPost(@Body() body: CreatePostDto, @Req() req: RequestWithUser) {
@@ -96,6 +92,24 @@ export class PostsController {
     await this.postsService.deletePost(id, req.user.id);
     return {
       message: PostMessages.DELETE_POST_SUCCESSFULLY
+    };
+  }
+
+  @Get()
+  async getAllPosts() {
+    const posts = await this.postsService.getAllPosts();
+    return {
+      message: PostMessages.GET_ALL_POSTS_SUCCESSFULLY,
+      result: posts
+    };
+  }
+
+  @Get(':id/comments')
+  async getComments(@Param() { id }: GetPostDto) {
+    const comments = await this.postsService.getComments(id);
+    return {
+      message: PostMessages.GET_COMMENTS_SUCCESSFULLY,
+      result: comments
     };
   }
 }
