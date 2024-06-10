@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { LikePostDto } from 'src/likes/dto/like.dto';
@@ -29,9 +29,9 @@ export class LikesController {
     };
   }
 
-  @Get()
-  public async isLikedPost(@Req() req: RequestWithUser, @Body() likePostDto: LikePostDto) {
-    const result = await this.likesService.isLikedPost(req.user._id, likePostDto.postId);
+  @Get(':postId')
+  public async isLikedPost(@Req() req: RequestWithUser, @Param('postId') postId: string) {
+    const result = await this.likesService.isLikedPost(req.user._id, postId);
 
     return {
       message: 'Check if post is liked',
