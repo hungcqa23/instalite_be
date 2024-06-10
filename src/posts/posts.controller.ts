@@ -79,7 +79,6 @@ export class PostsController {
   @Get(':id')
   async getPostById(@Param() { id }: GetPostDto) {
     const post = await this.postsService.getPostById(id);
-
     return {
       message: PostMessages.GET_POST_SUCCESSFULLY,
       post
@@ -110,6 +109,16 @@ export class PostsController {
     return {
       message: PostMessages.GET_COMMENTS_SUCCESSFULLY,
       result: comments
+    };
+  }
+
+  @Get(':username/posts')
+  async getPostsByUsername(@Param() { username }: { username: string }) {
+    const posts = await this.postsService.getPostsByUsername(username);
+
+    return {
+      message: 'Get posts by username successfully',
+      result: posts
     };
   }
 }

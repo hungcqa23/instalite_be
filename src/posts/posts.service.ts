@@ -55,6 +55,13 @@ export class PostsService {
     return post;
   }
 
+  public async getPostsByUsername(username: string) {
+    const user = await this.userModel.findOne({ username });
+    const posts = await this.postModel.find({ user_id: user._id, type_post: PostType.NewPost });
+
+    return posts;
+  }
+
   public async uploadMedia(file: Express.Multer.File, id: string) {
     const result = await this.filesService.uploadFile(file);
     if (file.mimetype === 'video/*') {
@@ -86,7 +93,15 @@ export class PostsService {
   }
 
   public async getAllPosts() {
-    const posts = await this.postModel.find({});
+    const posts = await this.postModel.find(
+      {},
+      {
+        sort: { created_at: -1 }
+        // sort: { created_at: -1 },
+        // limit: 10,
+        // skip: 10
+      }
+    );
     return posts;
   }
 

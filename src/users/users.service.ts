@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
 import { User, UserDocument } from 'src/users/user.schema';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
@@ -71,10 +71,18 @@ export class UsersService {
     return user;
   }
 
-  public async getUserByUsername(username: string): Promise<UserDocument> {
-    const user = this.userModel.findOne({ username }).select('-password -refresh_token');
+  public async getUserByUsername(username: string, userId: string) {
+    const user = await this.userModel.findOne({ username }).select('-password -refresh_token');
+    const is_following = await this.followModel.findOne({
+      user_id: userId,
+      followed_user_id: user._id.toString()
+    });
+
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    return user;
+    return {
+      user,
+      is_following: is_following ? true : false
+    };
   }
 
   public async searchUsersByUsername(username?: string): Promise<UserDocument[]> {
@@ -142,7 +150,7 @@ export class UsersService {
       ),
       this.notificationModel.create({
         user_id: userId,
-        user_receiver_id: followedUserId,
+        user_receiver_id: new Types.ObjectId(followedUserId),
         type: NotificationType.Follow,
         content: UserMessages.FOLLOW_SUCCESSFULLY
       })
@@ -182,7 +190,6 @@ export class UsersService {
       user_id: userId
     });
     const followingIds = [following.map(follow => follow.followed_user_id), userId];
-    console.log(followingIds);
     // Exclude the user who I'm currently following
     const users = await this.userModel
       .find({

@@ -10,6 +10,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -87,7 +88,7 @@ export class UsersController {
     };
   }
 
-  @Patch('me')
+  @Put('me')
   @UseGuards(JwtAccessTokenGuard)
   async updateMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.updateUser(req.user._id, updateUserDto);
@@ -109,8 +110,8 @@ export class UsersController {
 
   @Get(':username')
   @UseGuards(JwtAccessTokenGuard)
-  async getUserByUsername(@Param('username') username: string) {
-    const user = await this.usersService.getUserByUsername(username);
+  async getUserByUsername(@Param('username') username: string, @Req() req: RequestWithUser) {
+    const user = await this.usersService.getUserByUsername(username, req.user._id);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
