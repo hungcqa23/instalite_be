@@ -93,20 +93,24 @@ export class PostsService {
   }
 
   public async getAllPosts() {
-    const posts = await this.postModel.find(
-      {}
-      // {
-      //   sort: { created_at: -1 }
-      //   // sort: { created_at: -1 },
-      //   // limit: 10,
-      //   // skip: 10
-      // }
-    );
+    const posts = await this.postModel
+      .find({
+        type_post: PostType.NewPost
+      })
+      .sort({ created_at: -1 })
+      .populate({
+        path: 'user_id',
+        select: 'username avatar'
+      });
+
     return posts;
   }
 
   public async getComments(id: string) {
-    const comments = await this.postModel.find({ parent_post_id: id, type_post: PostType.Comment });
+    const comments = await this.postModel.find({ parent_post_id: id, type_post: PostType.Comment }).populate({
+      path: 'user_id',
+      select: 'username avatar'
+    });
     return comments;
   }
 }
