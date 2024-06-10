@@ -189,7 +189,9 @@ export class UsersService {
     const following = await this.followModel.find({
       user_id: userId
     });
-    const followingIds = [following.map(follow => follow.followed_user_id), userId];
+
+    const followingIds = [...following.map(follow => new Types.ObjectId(follow.followed_user_id)), userId];
+
     // Exclude the user who I'm currently following
     const users = await this.userModel
       .find({

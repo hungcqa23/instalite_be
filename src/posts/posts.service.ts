@@ -94,13 +94,13 @@ export class PostsService {
 
   public async getAllPosts() {
     const posts = await this.postModel.find(
-      {},
-      {
-        sort: { created_at: -1 }
-        // sort: { created_at: -1 },
-        // limit: 10,
-        // skip: 10
-      }
+      {}
+      // {
+      //   sort: { created_at: -1 }
+      //   // sort: { created_at: -1 },
+      //   // limit: 10,
+      //   // skip: 10
+      // }
     );
     return posts;
   }

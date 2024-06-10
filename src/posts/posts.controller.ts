@@ -10,6 +10,7 @@ import {
   ParseFilePipe,
   Patch,
   Post,
+  Put,
   Req,
   UploadedFile,
   UseGuards,
@@ -41,8 +42,7 @@ export class PostsController {
       post
     };
   }
-
-  @Patch(':id/upload-hls')
+  @Put(':id/upload-hls')
   @UseInterceptors(
     LocalFilesInterceptor({
       fieldName: 'media'
@@ -55,7 +55,7 @@ export class PostsController {
     };
   }
 
-  @Patch(':id')
+  @Put(':id')
   @UseInterceptors(FileInterceptor('media'))
   async uploadPost(
     @Param() { id }: GetPostDto,
