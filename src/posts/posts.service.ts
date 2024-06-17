@@ -10,6 +10,7 @@ import { User, UserDocument } from 'src/users/user.schema';
 import { Like, LikeDocument } from 'src/likes/like.schema';
 import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
 import { PostType } from 'src/constants/enum';
+import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -112,5 +113,19 @@ export class PostsService {
       select: 'username avatar'
     });
     return comments;
+  }
+
+  public async updatePost(id: string, post: UpdatePostDto) {
+    const postUpdate = await this.postModel.findOneAndUpdate(
+      { _id: id },
+      {
+        content: post.content
+      },
+      {
+        new: true
+      }
+    );
+    if (!postUpdate) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    return postUpdate;
   }
 }

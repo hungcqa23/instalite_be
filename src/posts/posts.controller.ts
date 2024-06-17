@@ -24,6 +24,7 @@ import { PostsService } from 'src/posts/posts.service';
 import { CreatePostDto } from 'src/posts/dto/create-post.dto';
 import { GetPostDto } from 'src/posts/dto/get-post.dto';
 import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
+import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('posts')
@@ -42,6 +43,7 @@ export class PostsController {
       post
     };
   }
+
   @Put(':id/upload-hls')
   @UseInterceptors(
     LocalFilesInterceptor({
@@ -85,15 +87,6 @@ export class PostsController {
     };
   }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param() { id }: GetPostDto, @Req() req: RequestWithUser) {
-    await this.postsService.deletePost(id, req.user.id);
-    return {
-      message: PostMessages.DELETE_POST_SUCCESSFULLY
-    };
-  }
-
   @Get()
   async getAllPosts() {
     const posts = await this.postsService.getAllPosts();
@@ -115,10 +108,27 @@ export class PostsController {
   @Get(':username/posts')
   async getPostsByUsername(@Param() { username }: { username: string }) {
     const posts = await this.postsService.getPostsByUsername(username);
-
     return {
       message: 'Get posts by username successfully',
       result: posts
+    };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deletePost(@Param() { id }: GetPostDto, @Req() req: RequestWithUser) {
+    await this.postsService.deletePost(id, req.user.id);
+    return {
+      message: PostMessages.DELETE_POST_SUCCESSFULLY
+    };
+  }
+
+  @Patch(':id')
+  async updatePost(@Param() { id }: GetPostDto, @Body() body: UpdatePostDto) {
+    const post = await this.postsService.updatePost(id, body);
+    return {
+      message: PostMessages.UPDATE_POST_SUCCESSFULLY,
+      post
     };
   }
 }
