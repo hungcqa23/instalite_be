@@ -69,13 +69,11 @@ export class PostsController {
     )
     file?: Express.Multer.File
   ) {
-    if (file) {
-      const url_media = await this.postsService.uploadMedia(file, id);
-      return {
-        message: PostMessages.UPLOAD_MEDIA_SUCCESSFULLY,
-        url_media
-      };
-    }
+    const url_media = await this.postsService.uploadMedia(id, file);
+    return {
+      message: PostMessages.UPLOAD_MEDIA_SUCCESSFULLY,
+      url_media
+    };
   }
 
   @Get(':id')

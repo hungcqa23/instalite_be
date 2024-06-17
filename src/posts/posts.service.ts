@@ -63,7 +63,21 @@ export class PostsService {
     return posts;
   }
 
-  public async uploadMedia(file: Express.Multer.File, id: string) {
+  public async uploadMedia(id: string, file?: Express.Multer.File) {
+    if (!file) {
+      const result = await this.postModel.findOneAndUpdate(
+        { _id: id },
+        {
+          $unset: { media: true }
+        },
+        {
+          new: true
+        }
+      );
+      console.log(result);
+      return '';
+    }
+
     const result = await this.filesService.uploadFile(file);
     if (file.mimetype === 'video/*') {
       await this.postModel.findOneAndUpdate({ _id: id }, { media: { url: result.Location, type: MediaType.VIDEO } });
