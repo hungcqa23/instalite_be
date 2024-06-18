@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class BookmarksService {
       },
       {
         user_id: userId,
-        post_id: postId
+        post_id: new Types.ObjectId(postId)
       },
       { upsert: true, new: true }
     );
@@ -25,15 +25,18 @@ export class BookmarksService {
 
   public async unBookmark(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOneAndDelete({
-      user_id: userId,
-      post_id: postId
+      user_id: new Types.ObjectId(userId),
+      post_id: new Types.ObjectId(postId)
     });
 
     return result;
   }
 
   public async getBookmarkedPosts(userId: string) {
-    const result = await this.bookMarkModel.find({ user_id: userId }).populate('post_id user_id');
+    const result = await this.bookMarkModel
+      .find({ user_id: userId })
+      .populate('post_id')
+      .populate('user_id', 'username avatar');
 
     return result;
   }
