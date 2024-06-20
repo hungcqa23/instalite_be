@@ -132,7 +132,7 @@ export class UsersService {
 
     await this.followModel.create({
       user_id: userId,
-      followed_user_id: followedUserId
+      followed_user_id: new Types.ObjectId(followedUserId)
     });
 
     await Promise.all([
@@ -162,9 +162,12 @@ export class UsersService {
   public async unfollow(userId: string, unFollowedUserId: string) {
     const unfollow = await this.followModel.findOneAndDelete({
       user_id: userId,
-      followed_user_id: unFollowedUserId
+      followed_user_id: new Types.ObjectId(unFollowedUserId)
     });
-    if (!unfollow) return UserMessages.ALREADY_UNFOLLOWED;
+    if (!unfollow) {
+      console.log('DONE!');
+      return UserMessages.ALREADY_UNFOLLOWED;
+    }
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
