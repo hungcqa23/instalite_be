@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cache } from 'cache-manager';
@@ -9,15 +15,20 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { UserMessages } from 'src/constants/messages';
 import { Follow, FollowDocument } from 'src/users/follow.schema';
-import { NotificationDocument, Notification } from 'src/notifications/notification.schema';
+import {
+  NotificationDocument,
+  Notification
+} from 'src/notifications/notification.schema';
 import { NotificationType } from 'src/constants/enum';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Follow.name) private readonly followModel: Model<FollowDocument>,
-    @InjectModel(Notification.name) private readonly notificationModel: Model<NotificationDocument>,
+    @InjectModel(Follow.name)
+    private readonly followModel: Model<FollowDocument>,
+    @InjectModel(Notification.name)
+    private readonly notificationModel: Model<NotificationDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly filesService: FilesService
   ) {}
@@ -38,7 +49,10 @@ export class UsersService {
     return this.userModel.findOne({ email });
   }
 
-  public async signUpWithGoogle(email: string, name: string): Promise<UserDocument> {
+  public async signUpWithGoogle(
+    email: string,
+    name: string
+  ): Promise<UserDocument> {
     const user = await this.userModel.create({
       email,
       name,
@@ -50,19 +64,31 @@ export class UsersService {
   }
 
   public async updateRefreshToken(userId: string, refreshToken: string) {
-    await this.userModel.findOneAndUpdate({ _id: userId }, { refresh_token: refreshToken });
+    await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { refresh_token: refreshToken }
+    );
   }
 
-  public async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+  public async getUserIfRefreshTokenMatches(
+    refreshToken: string,
+    userId: string
+  ) {
     console.log(refreshToken, userId);
-    const user = await this.userModel.findOne({ _id: userId, refresh_token: refreshToken });
+    const user = await this.userModel.findOne({
+      _id: userId,
+      refresh_token: refreshToken
+    });
     if (!user) throw new UnauthorizedException();
 
     return user;
   }
 
   public async removeRefreshToken(userId: string) {
-    await this.userModel.findOneAndUpdate({ _id: userId }, { refresh_token: null });
+    await this.userModel.findOneAndUpdate(
+      { _id: userId },
+      { refresh_token: null }
+    );
   }
 
   public async getUserById(id: string): Promise<UserDocument> {
@@ -72,7 +98,9 @@ export class UsersService {
   }
 
   public async getUserByUsername(username: string, userId: string) {
-    const user = await this.userModel.findOne({ username }).select('-password -refresh_token');
+    const user = await this.userModel
+      .findOne({ username })
+      .select('-password -refresh_token');
     const is_following = await this.followModel.findOne({
       user_id: userId,
       followed_user_id: user._id.toString()
@@ -85,7 +113,9 @@ export class UsersService {
     };
   }
 
-  public async searchUsersByUsername(username?: string): Promise<UserDocument[]> {
+  public async searchUsersByUsername(
+    username?: string
+  ): Promise<UserDocument[]> {
     // I want to search users array by username
     if (!username) return [];
     // i for case insensitive
@@ -193,7 +223,10 @@ export class UsersService {
       user_id: userId
     });
 
-    const followingIds = [...following.map(follow => new Types.ObjectId(follow.followed_user_id)), userId];
+    const followingIds = [
+      ...following.map(follow => new Types.ObjectId(follow.followed_user_id)),
+      userId
+    ];
 
     // Exclude the user who I'm currently following
     const users = await this.userModel
@@ -226,5 +259,19 @@ export class UsersService {
       .populate('followed_user_id', 'username avatar full_name');
 
     return followings;
+  }
+
+  public async checkFollow(userId: string, followedUsername: string) {
+    const followedUserId = await this.userModel.findOne({
+      username: followedUsername
+    });
+    console.log(followedUserId._id);
+    console.log(userId);
+    const follow = await this.followModel.findOne({
+      user_id: userId,
+      followed_user_id: followedUserId._id
+    });
+    if (follow) return true;
+    return false;
   }
 }

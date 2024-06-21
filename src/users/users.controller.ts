@@ -64,7 +64,9 @@ export class UsersController {
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: true,
-        validators: [new FileTypeValidator({ fileType: 'image/png|image/jpeg|image/jpg' })]
+        validators: [
+          new FileTypeValidator({ fileType: 'image/png|image/jpeg|image/jpg' })
+        ]
       })
     )
     file: Express.Multer.File,
@@ -82,7 +84,8 @@ export class UsersController {
   @UseGuards(JwtAccessTokenGuard)
   async getMe(@Req() req: RequestWithUser) {
     const user = await this.usersService.getUserById(req.user._id);
-    if (!user) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!user)
+      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
@@ -91,8 +94,14 @@ export class UsersController {
 
   @Put('me')
   @UseGuards(JwtAccessTokenGuard)
-  async updateMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.usersService.updateUser(req.user._id, updateUserDto);
+  async updateMe(
+    @Req() req: RequestWithUser,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    const user = await this.usersService.updateUser(
+      req.user._id,
+      updateUserDto
+    );
     return {
       message: UserMessages.UPDATE_USER_SUCCESSFULLY,
       result: user
@@ -111,11 +120,29 @@ export class UsersController {
 
   @Get(':username')
   @UseGuards(JwtAccessTokenGuard)
-  async getUserByUsername(@Param('username') username: string, @Req() req: RequestWithUser) {
-    const user = await this.usersService.getUserByUsername(username, req.user._id);
+  async getUserByUsername(
+    @Param('username') username: string,
+    @Req() req: RequestWithUser
+  ) {
+    const user = await this.usersService.getUserByUsername(
+      username,
+      req.user._id
+    );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
+    };
+  }
+
+  @Get(':username/follow')
+  async checkFollow(
+    @Param('username') username: string,
+    @Req() req: RequestWithUser
+  ) {
+    const result = await this.usersService.checkFollow(req.user._id, username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      result
     };
   }
 
@@ -139,8 +166,15 @@ export class UsersController {
 
   @Post('follow')
   @UseGuards(JwtAccessTokenGuard)
-  async follow(@Req() req: RequestWithUser, @Body() createFollowDto: CreateFollowDto, @Res() res: Response) {
-    const result = await this.usersService.createFollow(req.user._id, createFollowDto.followedUserId);
+  async follow(
+    @Req() req: RequestWithUser,
+    @Body() createFollowDto: CreateFollowDto,
+    @Res() res: Response
+  ) {
+    const result = await this.usersService.createFollow(
+      req.user._id,
+      createFollowDto.followedUserId
+    );
 
     return res.status(HttpStatus.CREATED).json({
       message: result
@@ -149,8 +183,15 @@ export class UsersController {
 
   @Delete('follow')
   @UseGuards(JwtAccessTokenGuard)
-  async unfollow(@Req() req: RequestWithUser, @Body() unfollowDto: UnFollowDto, @Res() res: Response) {
-    const result = await this.usersService.unfollow(req.user._id, unfollowDto.followedUserId);
+  async unfollow(
+    @Req() req: RequestWithUser,
+    @Body() unfollowDto: UnFollowDto,
+    @Res() res: Response
+  ) {
+    const result = await this.usersService.unfollow(
+      req.user._id,
+      unfollowDto.followedUserId
+    );
 
     return res.status(204).json({
       message: result

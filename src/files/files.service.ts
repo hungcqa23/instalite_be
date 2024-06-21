@@ -26,9 +26,13 @@ export class FilesService {
         secretAccessKey: configService.get<string>('AWS_SECRET_ACCESS_KEY')
       }
     });
-    this.googleGenerativeAI = new GoogleGenerativeAI(configService.get<string>('GEMINI_API_KEY'));
+    this.googleGenerativeAI = new GoogleGenerativeAI(
+      configService.get<string>('GEMINI_API_KEY')
+    );
 
-    this.model = this.googleGenerativeAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    this.model = this.googleGenerativeAI.getGenerativeModel({
+      model: 'gemini-1.5-flash'
+    });
   }
 
   private async checkVideoHasAudio(filePath: string) {
@@ -87,7 +91,13 @@ export class FilesService {
     };
   }
 
-  private getWidth(height: number, resolution: { width: number; height: number }) {
+  private getWidth(
+    height: number,
+    resolution: {
+      width: number;
+      height: number;
+    }
+  ) {
     const width = Math.round((height * resolution.width) / resolution.height);
     // Because ffmpeg use yuv420p format, width must be even
     return width % 2 === 0 ? width : width + 1;
@@ -168,7 +178,19 @@ export class FilesService {
     const { $ } = await import('zx');
     const slash = (await import('slash')).default;
 
-    const args = ['-y', '-i', slash(inputPath), '-preset', 'veryslow', '-g', '48', '-crf', '17', '-sc_threshold', '0'];
+    const args = [
+      '-y',
+      '-i',
+      slash(inputPath),
+      '-preset',
+      'veryslow',
+      '-g',
+      '48',
+      '-crf',
+      '17',
+      '-sc_threshold',
+      '0'
+    ];
     if (isHasAudio) {
       args.push('-map', '0:0', '-map', '0:1', '-map', '0:0', '-map', '0:1');
     } else {
@@ -229,10 +251,35 @@ export class FilesService {
     const { $ } = await import('zx');
     const slash = (await import('slash')).default;
 
-    const args = ['-y', '-i', slash(inputPath), '-preset', 'veryslow', '-g', '48', '-crf', '17', '-sc_threshold', '0'];
+    const args = [
+      '-y',
+      '-i',
+      slash(inputPath),
+      '-preset',
+      'veryslow',
+      '-g',
+      '48',
+      '-crf',
+      '17',
+      '-sc_threshold',
+      '0'
+    ];
 
     if (isHasAudio) {
-      args.push('-map', '0:0', '-map', '0:1', '-map', '0:0', '-map', '0:1', '-map', '0:0', '-map', '0:1');
+      args.push(
+        '-map',
+        '0:0',
+        '-map',
+        '0:1',
+        '-map',
+        '0:0',
+        '-map',
+        '0:1',
+        '-map',
+        '0:0',
+        '-map',
+        '0:1'
+      );
     } else {
       args.push('-map', '0:0', '-map', '0:0', '-map', '0:0');
     }
@@ -296,9 +343,34 @@ export class FilesService {
     const { $ } = await import('zx');
     const slash = (await import('slash')).default;
 
-    const args = ['-y', '-i', slash(inputPath), '-preset', 'veryslow', '-g', '48', '-crf', '17', '-sc_threshold', '0'];
+    const args = [
+      '-y',
+      '-i',
+      slash(inputPath),
+      '-preset',
+      'veryslow',
+      '-g',
+      '48',
+      '-crf',
+      '17',
+      '-sc_threshold',
+      '0'
+    ];
     if (isHasAudio) {
-      args.push('-map', '0:0', '-map', '0:1', '-map', '0:0', '-map', '0:1', '-map', '0:0', '-map', '0:1');
+      args.push(
+        '-map',
+        '0:0',
+        '-map',
+        '0:1',
+        '-map',
+        '0:0',
+        '-map',
+        '0:1',
+        '-map',
+        '0:0',
+        '-map',
+        '0:1'
+      );
     } else {
       args.push('-map', '0:0', '-map', '0:0', '-map', '0:0');
     }
@@ -368,14 +440,24 @@ export class FilesService {
   }
 
   public async encodeHLSWithMultipleVideoStreams(inputPath: string) {
-    const [bitrate, resolution] = await Promise.all([this.getBitrate(inputPath), this.getResolution(inputPath)]);
+    const [bitrate, resolution] = await Promise.all([
+      this.getBitrate(inputPath),
+      this.getResolution(inputPath)
+    ]);
     const parentFolder = path.join(inputPath, '..');
 
     const outputSegmentPath = path.join(parentFolder, 'v%v/fileSequence%d.ts');
     const outputPath = path.join(parentFolder, 'v%v/prog_index.m3u8');
-    const bitrate720 = bitrate > this.MAXIMUM_BITRATE_720P ? this.MAXIMUM_BITRATE_720P : bitrate;
-    const bitrate1080 = bitrate > this.MAXIMUM_BITRATE_1080P ? this.MAXIMUM_BITRATE_1080P : bitrate;
-    const bitrate1440 = bitrate > this.MAXIMUM_BITRATE_1440P ? this.MAXIMUM_BITRATE_1440P : bitrate;
+    const bitrate720 =
+      bitrate > this.MAXIMUM_BITRATE_720P ? this.MAXIMUM_BITRATE_720P : bitrate;
+    const bitrate1080 =
+      bitrate > this.MAXIMUM_BITRATE_1080P
+        ? this.MAXIMUM_BITRATE_1080P
+        : bitrate;
+    const bitrate1440 =
+      bitrate > this.MAXIMUM_BITRATE_1440P
+        ? this.MAXIMUM_BITRATE_1440P
+        : bitrate;
     const isHasAudio = await this.checkVideoHasAudio(inputPath);
 
     if (resolution.height > 1440)
@@ -394,7 +476,12 @@ export class FilesService {
       });
     else if (resolution.height > 720)
       this.encodeMax1080({
-        bitrate: { 720: bitrate720, 1080: bitrate1080, 1440: bitrate1440, original: bitrate },
+        bitrate: {
+          720: bitrate720,
+          1080: bitrate1080,
+          1440: bitrate1440,
+          original: bitrate
+        },
         inputPath,
         isHasAudio,
         outputPath,
@@ -403,7 +490,12 @@ export class FilesService {
       });
     else
       this.encodeMax720({
-        bitrate: { 720: bitrate720, 1080: bitrate1080, 1440: bitrate1440, original: bitrate },
+        bitrate: {
+          720: bitrate720,
+          1080: bitrate1080,
+          1440: bitrate1440,
+          original: bitrate
+        },
         inputPath,
         isHasAudio,
         outputPath,
@@ -428,16 +520,25 @@ export class FilesService {
   }
 
   public async deleteFile(url: string) {
-    this.s3.deleteObject({ Bucket: this.configService.get<string>('AWS_BUCKET_NAME'), Key: url });
+    this.s3.deleteObject({
+      Bucket: this.configService.get<string>('AWS_BUCKET_NAME'),
+      Key: url
+    });
   }
 
   public getMasterM3U8(id: string) {
-    const pathName = path.resolve(this.configService.get<string>('UPLOAD_DIR'), `${id}/master.m3u8`);
+    const pathName = path.resolve(
+      this.configService.get<string>('UPLOAD_DIR'),
+      `${id}/master.m3u8`
+    );
     return pathName;
   }
 
   public getSegment(id: string, v: string, segment: string) {
-    const pathName = path.resolve(this.configService.get<string>('UPLOAD_DIR'), `${id}/${v}/${segment}`);
+    const pathName = path.resolve(
+      this.configService.get<string>('UPLOAD_DIR'),
+      `${id}/${v}/${segment}`
+    );
     return pathName;
   }
 
@@ -447,10 +548,11 @@ export class FilesService {
     },
     file?: Express.Multer.File
   ) {
-    const prompt = `Summarize this post content and its images if it has and if it doesn't have any image please don't refer to it. The post content is: ${body.content}.`;
+    const prompt = `Summarize this post content and its images if it has
+    and if it doesn't have any image please don't refer to it and please generate content in English. 
+    The post content is: ${body.content}.`;
 
     const imagePart = file ? [this.fileToGenerativePart(file)] : [];
-
     const result = await this.model.generateContent([prompt, ...imagePart]);
     const response = result.response;
     const text = response.text();

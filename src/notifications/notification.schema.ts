@@ -21,6 +21,9 @@ export class Notification {
   @Prop({ type: Types.ObjectId, ref: 'Post' })
   post_id: Types.ObjectId;
 
+  @Prop({ default: false })
+  checked: boolean;
+
   @Prop({ default: Date.now })
   created_at: Date;
 }
