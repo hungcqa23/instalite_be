@@ -1,6 +1,8 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { FilesService } from 'src/files/files.service';
+import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
 
 @Controller('files')
 export class FilesController {
@@ -35,5 +37,20 @@ export class FilesController {
     //     console.log('Not found error');
     //   }
     // });
+  }
+
+  @Post('/summary')
+  @UseInterceptors(FileInterceptor('media'))
+  async getSummaryContent(
+    @Body()
+    body: {
+      content: string;
+    },
+    @UploadedFile() file?: Express.Multer.File
+  ) {
+    const result = await this.filesService.getSummaryContent(body, file);
+    return {
+      content: result
+    };
   }
 }

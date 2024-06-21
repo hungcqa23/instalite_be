@@ -25,6 +25,7 @@
     "@aws-sdk/client-ses": "^3.552.0",
     "@aws-sdk/lib-storage": "^3.554.0",
     "@elastic/elasticsearch": "^8.13.1",
+    "@google/generative-ai": "^0.13.0",
     "@nestjs/apollo": "^12.1.0",
     "@nestjs/cache-manager": "^2.2.2",
     "@nestjs/common": "^10.0.0",
@@ -84,7 +85,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },

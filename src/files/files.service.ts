@@ -4,7 +4,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
+import fs from 'fs';
 import { EncodeByResolution } from 'src/files/types/encode.type';
+import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()
 export class FilesService {
@@ -13,6 +15,8 @@ export class FilesService {
   MAXIMUM_BITRATE_1440P = 16 * 10 ** 6; // 16Mbps
 
   private s3: S3;
+  private googleGenerativeAI: GoogleGenerativeAI;
+  private model: GenerativeModel;
 
   constructor(private readonly configService: ConfigService) {
     this.s3 = new S3({
@@ -22,7 +26,11 @@ export class FilesService {
         secretAccessKey: configService.get<string>('AWS_SECRET_ACCESS_KEY')
       }
     });
+    this.googleGenerativeAI = new GoogleGenerativeAI(configService.get<string>('GEMINI_API_KEY'));
+
+    this.model = this.googleGenerativeAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
   }
+
   private async checkVideoHasAudio(filePath: string) {
     const slash = (await import('slash')).default;
     const { $ } = await import('zx');
@@ -343,6 +351,22 @@ export class FilesService {
     return true;
   }
 
+  private fileToGenerativePart(file: Express.Multer.File) {
+    try {
+      const buffer = file.buffer;
+      return {
+        inlineData: {
+          data: buffer.toString('base64'),
+          mimeType: file.mimetype // Use file.mimetype for accurate MIME type
+        }
+      };
+    } catch (error) {
+      console.error('Error reading file:', error);
+      // Handle the error appropriately (e.g., return an error object)
+      // return { error: 'Error reading file' };
+    }
+  }
+
   public async encodeHLSWithMultipleVideoStreams(inputPath: string) {
     const [bitrate, resolution] = await Promise.all([this.getBitrate(inputPath), this.getResolution(inputPath)]);
     const parentFolder = path.join(inputPath, '..');
@@ -415,5 +439,21 @@ export class FilesService {
   public getSegment(id: string, v: string, segment: string) {
     const pathName = path.resolve(this.configService.get<string>('UPLOAD_DIR'), `${id}/${v}/${segment}`);
     return pathName;
+  }
+
+  public async getSummaryContent(
+    body: {
+      content: string;
+    },
+    file?: Express.Multer.File
+  ) {
+    const prompt = `Summarize this post content and its images if it has and if it doesn't have any image please don't refer to it. The post content is: ${body.content}.`;
+
+    const imagePart = file ? [this.fileToGenerativePart(file)] : [];
+
+    const result = await this.model.generateContent([prompt, ...imagePart]);
+    const response = result.response;
+    const text = response.text();
+    return text;
   }
 }
