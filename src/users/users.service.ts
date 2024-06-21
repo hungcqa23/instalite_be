@@ -212,7 +212,7 @@ export class UsersService {
       .find({
         followed_user_id: userId._id
       })
-      .populate('user_id', 'username avatar');
+      .populate('user_id', 'username avatar full_name');
 
     return followers;
   }
@@ -223,7 +223,7 @@ export class UsersService {
       .find({
         user_id: userId._id
       })
-      .populate('followed_user_id', 'username avatar');
+      .populate('followed_user_id', 'username avatar full_name');
 
     return followings;
   }
