@@ -33,6 +33,7 @@ import { UsersService } from 'src/users/users.service';
 
 @Controller('users')
 @ApiTags('Users')
+@UseGuards(JwtAccessTokenGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -115,6 +116,24 @@ export class UsersController {
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       user
+    };
+  }
+
+  @Get(':username/followers')
+  async getAllFollowers(@Param('username') username: string) {
+    const followers = await this.usersService.getAllFollowers(username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      data: followers
+    };
+  }
+
+  @Get(':username/followings')
+  async getAllFollowings(@Param('username') username: string) {
+    const followers = await this.usersService.getAllFollowings(username);
+    return {
+      message: UserMessages.GET_USER_SUCCESSFULLY,
+      data: followers
     };
   }
 

@@ -205,4 +205,26 @@ export class UsersService {
 
     return users;
   }
+
+  public async getAllFollowers(username: string) {
+    const userId = await this.userModel.findOne({ username });
+    const followers = await this.followModel
+      .find({
+        followed_user_id: userId._id
+      })
+      .populate('user_id', 'username avatar');
+
+    return followers;
+  }
+
+  public async getAllFollowings(username: string) {
+    const userId = await this.userModel.findOne({ username });
+    const followings = await this.followModel
+      .find({
+        user_id: userId._id
+      })
+      .populate('followed_user_id', 'username avatar');
+
+    return followings;
+  }
 }
