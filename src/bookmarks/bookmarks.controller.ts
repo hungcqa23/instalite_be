@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Req,
+  UseGuards
+} from '@nestjs/common';
 import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
 import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
 import { BookmarksService } from 'src/bookmarks/bookmarks.service';
@@ -10,8 +18,14 @@ export class BookmarksController {
   constructor(private readonly bookmarksService: BookmarksService) {}
 
   @Post()
-  public async bookmarkPost(@Req() req: RequestWithUser, @Body() creatBookMarkDto: CreateBookMarkDto) {
-    const result = await this.bookmarksService.bookmarkPost(req.user._id, creatBookMarkDto.postId);
+  public async bookmarkPost(
+    @Req() req: RequestWithUser,
+    @Body() creatBookMarkDto: CreateBookMarkDto
+  ) {
+    const result = await this.bookmarksService.bookmarkPost(
+      req.user._id,
+      creatBookMarkDto.postId
+    );
 
     return {
       message: 'Created bookmark',
@@ -25,8 +39,14 @@ export class BookmarksController {
   }
 
   @Delete()
-  public async unBookmark(@Req() req: RequestWithUser, @Body() creatBookMarkDto: CreateBookMarkDto) {
-    const result = await this.bookmarksService.unBookmark(req.user._id, creatBookMarkDto.postId);
+  public async unBookmark(
+    @Req() req: RequestWithUser,
+    @Body() creatBookMarkDto: CreateBookMarkDto
+  ) {
+    const result = await this.bookmarksService.unBookmark(
+      req.user._id,
+      creatBookMarkDto.postId
+    );
 
     return {
       message: 'Deleted bookmark',
@@ -35,12 +55,23 @@ export class BookmarksController {
   }
 
   @Get('/check')
-  public async isBookmarkedPost(@Req() req: RequestWithUser, @Body() creatBookMarkDto: CreateBookMarkDto) {
-    const result = await this.bookmarksService.isBookmarkedPost(req.user._id, creatBookMarkDto.postId);
+  public async isBookmarkedPost(
+    @Req() req: RequestWithUser,
+    @Body() creatBookMarkDto: CreateBookMarkDto
+  ) {
+    const result = await this.bookmarksService.isBookmarkedPost(
+      req.user._id,
+      creatBookMarkDto.postId
+    );
 
     return {
       message: 'Check if post is bookmarked',
       result
     };
+  }
+
+  @Get('/me')
+  public async getAllBookmarkedPosts(@Req() req: RequestWithUser) {
+    return await this.bookmarksService.getAllBookmarkedPosts(req.user._id);
   }
 }

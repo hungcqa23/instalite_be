@@ -5,7 +5,10 @@ import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
 
 @Injectable()
 export class BookmarksService {
-  constructor(@InjectModel(BookMark.name) private readonly bookMarkModel: Model<BookMarkDocument>) {}
+  constructor(
+    @InjectModel(BookMark.name)
+    private readonly bookMarkModel: Model<BookMarkDocument>
+  ) {}
 
   public async bookmarkPost(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOneAndUpdate(
@@ -44,9 +47,22 @@ export class BookmarksService {
   public async isBookmarkedPost(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOne({
       user_id: userId,
-      post_id: postId
+      post_id: new Types.ObjectId(postId) // postId
     });
-
     return result ? true : false;
+  }
+
+  public async getAllBookmarkedPosts(userId: string) {
+    const result = await this.bookMarkModel
+      .find({ user_id: userId })
+      .populate('post_id')
+      .populate({
+        path: 'post_id',
+        populate: {
+          path: 'user_id',
+          select: 'username avatar'
+        }
+      });
+    return result;
   }
 }

@@ -19,10 +19,13 @@ export class PostsService {
     @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
-    @InjectModel(BookMark.name) private readonly bookMarkModel: Model<BookMarkDocument>
+    @InjectModel(BookMark.name)
+    private readonly bookMarkModel: Model<BookMarkDocument>
   ) {}
 
-  public async create(postBody: CreatePostDto & { user_id: string }): Promise<PostDocument> {
+  public async create(
+    postBody: CreatePostDto & { user_id: string }
+  ): Promise<PostDocument> {
     const [post] = await Promise.all([
       this.postModel.create({
         ...postBody,
@@ -31,7 +34,10 @@ export class PostsService {
         created_at: new Date(),
         updated_at: new Date()
       }),
-      this.userModel.findOneAndUpdate({ _id: postBody.user_id }, { $inc: { posts_count: 1 } })
+      this.userModel.findOneAndUpdate(
+        { _id: postBody.user_id },
+        { $inc: { posts_count: 1 } }
+      )
     ]);
     return post;
   }
@@ -52,13 +58,22 @@ export class PostsService {
         }
       });
 
-    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!post)
+      throw new HttpException(
+        PostMessages.POST_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     return post;
   }
 
   public async getPostsByUsername(username: string) {
     const user = await this.userModel.findOne({ username });
-    const posts = await this.postModel.find({ user_id: user._id, type_post: PostType.NewPost });
+    const posts = await this.postModel
+      .find({ user_id: user._id, type_post: PostType.NewPost })
+      .populate({
+        path: 'user_id',
+        select: 'username avatar'
+      });
 
     return posts;
   }
@@ -80,26 +95,46 @@ export class PostsService {
 
     const result = await this.filesService.uploadFile(file);
     if (file.mimetype === 'video/*') {
-      await this.postModel.findOneAndUpdate({ _id: id }, { media: { url: result.Location, type: MediaType.VIDEO } });
+      await this.postModel.findOneAndUpdate(
+        { _id: id },
+        { media: { url: result.Location, type: MediaType.VIDEO } }
+      );
       return result.Location;
     }
 
-    await this.postModel.findOneAndUpdate({ _id: id }, { media: { url: result.Location, type: MediaType.IMAGE } });
+    await this.postModel.findOneAndUpdate(
+      { _id: id },
+      { media: { url: result.Location, type: MediaType.IMAGE } }
+    );
     return result.Location;
   }
 
   public async uploadVideoHLS(file: Express.Multer.File, postId: string) {
+    // console.log(file.path);
     await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
-    await this.postModel.findOneAndUpdate({ _id: postId }, { media: { url: file.path, type: MediaType.VIDEO } });
+    await this.postModel.findOneAndUpdate(
+      { _id: postId },
+      { media: { url: file.path, type: MediaType.VIDEO } }
+    );
     return file.path;
   }
 
   public async deletePost(id: string, userId: string) {
-    const post = await this.postModel.findOneAndDelete({ _id: id, user_id: userId });
-    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    const post = await this.postModel.findOneAndDelete({
+      _id: id,
+      user_id: userId
+    });
+    if (!post)
+      throw new HttpException(
+        PostMessages.POST_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
 
     await Promise.all([
-      this.userModel.findOneAndUpdate({ _id: post.user_id }, { $inc: { posts_count: -1 } }),
+      this.userModel.findOneAndUpdate(
+        { _id: post.user_id },
+        { $inc: { posts_count: -1 } }
+      ),
       this.likeModel.deleteMany({ post_id: id }),
       this.bookMarkModel.deleteMany({ post_id: id }),
       this.postModel.deleteMany({ parent_post_id: id })
@@ -122,10 +157,12 @@ export class PostsService {
   }
 
   public async getComments(id: string) {
-    const comments = await this.postModel.find({ parent_post_id: id, type_post: PostType.Comment }).populate({
-      path: 'user_id',
-      select: 'username avatar'
-    });
+    const comments = await this.postModel
+      .find({ parent_post_id: id, type_post: PostType.Comment })
+      .populate({
+        path: 'user_id',
+        select: 'username avatar'
+      });
     return comments;
   }
 
@@ -139,7 +176,11 @@ export class PostsService {
         new: true
       }
     );
-    if (!postUpdate) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!postUpdate)
+      throw new HttpException(
+        PostMessages.POST_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
     return postUpdate;
   }
 }

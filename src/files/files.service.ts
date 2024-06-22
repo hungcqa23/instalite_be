@@ -17,6 +17,8 @@ export class FilesService {
   private s3: S3;
   private googleGenerativeAI: GoogleGenerativeAI;
   private model: GenerativeModel;
+  private items: string[];
+  private encoding: boolean;
 
   constructor(private readonly configService: ConfigService) {
     this.s3 = new S3({
@@ -33,6 +35,9 @@ export class FilesService {
     this.model = this.googleGenerativeAI.getGenerativeModel({
       model: 'gemini-1.5-flash'
     });
+
+    this.items = [];
+    this.encoding = false;
   }
 
   private async checkVideoHasAudio(filePath: string) {
@@ -246,8 +251,6 @@ export class FilesService {
     outputSegmentPath,
     resolution
   }: EncodeByResolution) {
-    console.log('Clg this');
-    console.log(this);
     const { $ } = await import('zx');
     const slash = (await import('slash')).default;
 
@@ -461,7 +464,7 @@ export class FilesService {
     const isHasAudio = await this.checkVideoHasAudio(inputPath);
 
     if (resolution.height > 1440)
-      this.encodeMaxOriginal({
+      await this.encodeMaxOriginal({
         bitrate: {
           720: bitrate720,
           1080: bitrate1080,
@@ -475,7 +478,7 @@ export class FilesService {
         resolution
       });
     else if (resolution.height > 720)
-      this.encodeMax1080({
+      await this.encodeMax1080({
         bitrate: {
           720: bitrate720,
           1080: bitrate1080,
@@ -489,7 +492,7 @@ export class FilesService {
         resolution
       });
     else
-      this.encodeMax720({
+      await this.encodeMax720({
         bitrate: {
           720: bitrate720,
           1080: bitrate1080,
@@ -531,6 +534,7 @@ export class FilesService {
       this.configService.get<string>('UPLOAD_DIR'),
       `${id}/master.m3u8`
     );
+    console.log(pathName);
     return pathName;
   }
 

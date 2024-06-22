@@ -32,7 +32,10 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  async createNewPost(@Body() body: CreatePostDto, @Req() req: RequestWithUser) {
+  async createNewPost(
+    @Body() body: CreatePostDto,
+    @Req() req: RequestWithUser
+  ) {
     const post = await this.postsService.create({
       ...body,
       user_id: req.user.id
@@ -50,7 +53,10 @@ export class PostsController {
       fieldName: 'media'
     })
   )
-  async uploadVideoHLS(@Param() { id }: GetPostDto, @UploadedFile() file: Express.Multer.File) {
+  async uploadVideoHLS(
+    @Param() { id }: GetPostDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
     const url_media = await this.postsService.uploadVideoHLS(file, id);
     return {
       message: url_media
@@ -64,7 +70,11 @@ export class PostsController {
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
-        validators: [new FileTypeValidator({ fileType: 'image/png|image/jpeg|image/jpg|video/*' })]
+        validators: [
+          new FileTypeValidator({
+            fileType: 'image/png|image/jpeg|image/jpg|video/*'
+          })
+        ]
       })
     )
     file?: Express.Multer.File
@@ -103,8 +113,9 @@ export class PostsController {
     };
   }
 
-  @Get(':username/posts')
+  @Get(':username/username')
   async getPostsByUsername(@Param() { username }: { username: string }) {
+    console.log(username);
     const posts = await this.postsService.getPostsByUsername(username);
     return {
       message: 'Get posts by username successfully',
