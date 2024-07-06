@@ -89,7 +89,6 @@ export class PostsService {
           new: true
         }
       );
-      console.log(result);
       return '';
     }
 
@@ -110,7 +109,6 @@ export class PostsService {
   }
 
   public async uploadVideoHLS(file: Express.Multer.File, postId: string) {
-    // console.log(file.path);
     await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
     await this.postModel.findOneAndUpdate(
       { _id: postId },

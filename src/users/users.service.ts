@@ -74,7 +74,6 @@ export class UsersService {
     refreshToken: string,
     userId: string
   ) {
-    console.log(refreshToken, userId);
     const user = await this.userModel.findOne({
       _id: userId,
       refresh_token: refreshToken
@@ -195,7 +194,6 @@ export class UsersService {
       followed_user_id: new Types.ObjectId(unFollowedUserId)
     });
     if (!unfollow) {
-      console.log('DONE!');
       return UserMessages.ALREADY_UNFOLLOWED;
     }
 
@@ -265,8 +263,6 @@ export class UsersService {
     const followedUserId = await this.userModel.findOne({
       username: followedUsername
     });
-    console.log(followedUserId._id);
-    console.log(userId);
     const follow = await this.followModel.findOne({
       user_id: userId,
       followed_user_id: followedUserId._id

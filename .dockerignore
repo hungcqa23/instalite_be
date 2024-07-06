@@ -1,0 +1,5 @@
+# Exclude locally installed dependencies
+node_modules/
+
+# Exclude "build-time" ignore files.
+.dockerignore

@@ -38,9 +38,6 @@ export class LikesService {
   }
 
   async unlikePost(userId: string, postId: string) {
-    console.log(userId);
-    console.log(postId);
-
     if (await this.isLikedPost(userId, postId))
       await this.postModel.findByIdAndUpdate(postId, {
         $inc: {
@@ -61,7 +58,6 @@ export class LikesService {
       user_id: userId,
       post_id: postId
     });
-    console.log(result);
     return result ? true : false;
   }
 }

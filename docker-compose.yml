@@ -43,6 +43,16 @@ services:
       - instalite
     volumes:
       - /usr/share/redis/data
+
+  # server:
+  #   build: .
+  #   container_name: server
+  #   ports:
+  #     - 8000:8000
+  #   depends_on:
+  #     - redis
+  #   networks:
+  #     - instalite
 networks:
   instalite:
     driver: bridge

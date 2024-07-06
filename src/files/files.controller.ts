@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { FilesService } from 'src/files/files.service';
@@ -14,7 +23,7 @@ export class FilesController {
 
     return res.sendFile(result, err => {
       if (err) {
-        console.log('Not found error');
+        console.log('Error');
       }
     });
   }
@@ -29,7 +38,7 @@ export class FilesController {
     const result = this.filesService.getSegment(id, v, segment);
     res.sendFile(result, err => {
       if (err) {
-        console.log('Not found error');
+        console.log('Error');
       }
     });
     // return res.sendFile(result, err => {

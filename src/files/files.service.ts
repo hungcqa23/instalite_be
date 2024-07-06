@@ -534,7 +534,7 @@ export class FilesService {
       this.configService.get<string>('UPLOAD_DIR'),
       `${id}/master.m3u8`
     );
-    console.log(pathName);
+    // console.log(pathName);
     return pathName;
   }
 

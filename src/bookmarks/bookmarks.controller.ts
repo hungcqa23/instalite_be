@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Post,
   Req,
   UseGuards
@@ -54,14 +55,14 @@ export class BookmarksController {
     };
   }
 
-  @Get('/check')
+  @Get('/:postId/check')
   public async isBookmarkedPost(
     @Req() req: RequestWithUser,
-    @Body() creatBookMarkDto: CreateBookMarkDto
+    @Param('postId') postId: string
   ) {
     const result = await this.bookmarksService.isBookmarkedPost(
       req.user._id,
-      creatBookMarkDto.postId
+      postId
     );
 
     return {

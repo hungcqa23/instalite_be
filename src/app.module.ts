@@ -15,6 +15,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import * as Joi from 'joi';
 import { redisStore } from 'cache-manager-redis-store';
 import { NotificationsModule } from './notifications/notifications.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -75,7 +76,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     PostsModule,
     LikesModule,
     BookmarksModule,
-    NotificationsModule
+    NotificationsModule,
+    GatewayModule
   ],
   providers: [EmailService]
 })

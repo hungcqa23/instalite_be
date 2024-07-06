@@ -115,7 +115,6 @@ export class PostsController {
 
   @Get(':username/username')
   async getPostsByUsername(@Param() { username }: { username: string }) {
-    console.log(username);
     const posts = await this.postsService.getPostsByUsername(username);
     return {
       message: 'Get posts by username successfully',
