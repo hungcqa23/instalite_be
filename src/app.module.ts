@@ -76,8 +76,8 @@ import { GatewayModule } from './gateway/gateway.module';
     PostsModule,
     LikesModule,
     BookmarksModule,
-    NotificationsModule,
-    GatewayModule
+    NotificationsModule
+    // GatewayModule
   ],
   providers: [EmailService]
 })

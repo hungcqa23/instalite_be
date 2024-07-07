@@ -41,11 +41,6 @@ export class FilesController {
         console.log('Error');
       }
     });
-    // return res.sendFile(result, err => {
-    //   if (err) {
-    //     console.log('Not found error');
-    //   }
-    // });
   }
 
   @Post('/summary')

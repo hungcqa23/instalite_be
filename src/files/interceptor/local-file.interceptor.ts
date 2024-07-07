@@ -26,7 +26,6 @@ function LocalFilesInterceptor(
         '..',
         '..',
         '..',
-        '..',
         folderDestination
       );
       // const destination = `${filesDestination}${options.path}`;
