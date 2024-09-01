@@ -1,3 +1,12 @@
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { PostMessages } from 'src/constants/messages';
+import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { GetPostDto } from 'src/posts/dto/get-post.dto';
+import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
+import { PostsService } from 'src/posts/posts.service';
+
 import {
   Body,
   Controller,
@@ -17,14 +26,6 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
-import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
-import { PostMessages } from 'src/constants/messages';
-import { PostsService } from 'src/posts/posts.service';
-import { CreatePostDto } from 'src/posts/dto/create-post.dto';
-import { GetPostDto } from 'src/posts/dto/get-post.dto';
-import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
-import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('posts')
@@ -33,8 +34,10 @@ export class PostsController {
 
   @Post()
   async createNewPost(
-    @Body() body: CreatePostDto,
-    @Req() req: RequestWithUser
+    @Body()
+    body: CreatePostDto,
+    @Req()
+    req: RequestWithUser
   ) {
     const post = await this.postsService.create({
       ...body,
@@ -54,8 +57,10 @@ export class PostsController {
     })
   )
   async uploadVideoHLS(
-    @Param() { id }: GetPostDto,
-    @UploadedFile() file: Express.Multer.File
+    @Param()
+    { id }: GetPostDto,
+    @UploadedFile()
+    file: Express.Multer.File
   ) {
     const url_media = await this.postsService.uploadVideoHLS(file, id);
     return {
@@ -66,7 +71,8 @@ export class PostsController {
   @Put(':id')
   @UseInterceptors(FileInterceptor('media'))
   async uploadPost(
-    @Param() { id }: GetPostDto,
+    @Param()
+    { id }: GetPostDto,
     @UploadedFile(
       new ParseFilePipe({
         fileIsRequired: false,
@@ -87,7 +93,10 @@ export class PostsController {
   }
 
   @Get(':id')
-  async getPostById(@Param() { id }: GetPostDto) {
+  async getPostById(
+    @Param()
+    { id }: GetPostDto
+  ) {
     const post = await this.postsService.getPostById(id);
     return {
       message: PostMessages.GET_POST_SUCCESSFULLY,
@@ -105,7 +114,10 @@ export class PostsController {
   }
 
   @Get(':id/comments')
-  async getComments(@Param() { id }: GetPostDto) {
+  async getComments(
+    @Param()
+    { id }: GetPostDto
+  ) {
     const comments = await this.postsService.getComments(id);
     return {
       message: PostMessages.GET_COMMENTS_SUCCESSFULLY,
@@ -114,7 +126,10 @@ export class PostsController {
   }
 
   @Get(':username/username')
-  async getPostsByUsername(@Param() { username }: { username: string }) {
+  async getPostsByUsername(
+    @Param()
+    { username }: { username: string }
+  ) {
     const posts = await this.postsService.getPostsByUsername(username);
     return {
       message: 'Get posts by username successfully',
@@ -124,7 +139,12 @@ export class PostsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param() { id }: GetPostDto, @Req() req: RequestWithUser) {
+  async deletePost(
+    @Param()
+    { id }: GetPostDto,
+    @Req()
+    req: RequestWithUser
+  ) {
     await this.postsService.deletePost(id, req.user.id);
     return {
       message: PostMessages.DELETE_POST_SUCCESSFULLY
@@ -132,7 +152,12 @@ export class PostsController {
   }
 
   @Patch(':id')
-  async updatePost(@Param() { id }: GetPostDto, @Body() body: UpdatePostDto) {
+  async updatePost(
+    @Param()
+    { id }: GetPostDto,
+    @Body()
+    body: UpdatePostDto
+  ) {
     const post = await this.postsService.updatePost(id, body);
     return {
       message: PostMessages.UPDATE_POST_SUCCESSFULLY,

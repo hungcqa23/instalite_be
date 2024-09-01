@@ -6,7 +6,10 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended'
+  ],
   root: true,
   env: {
     node: true,
@@ -29,8 +32,13 @@ module.exports = {
         endOfLine: 'auto',
         useTabs: false,
         singleQuote: true,
-        printWidth: 120,
-        jsxSingleQuote: true
+        printWidth: 80,
+        jsxSingleQuote: true,
+        importOrderParserPlugins: ['typescript', 'decorators-legacy'],
+        importOrder: ['^@nestjs/(.*)$', '^[./]'],
+        importOrderSeparation: true,
+        importOrderSortSpecifiers: true,
+        plugins: ['@trivago/prettier-plugin-sort-imports']
       }
     ]
   }

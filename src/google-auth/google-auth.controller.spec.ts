@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { GoogleAuthController } from './google-auth.controller';
 
 describe('GoogleAuthController', () => {

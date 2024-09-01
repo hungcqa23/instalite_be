@@ -1,4 +1,11 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString
+} from 'class-validator';
 import { PostType } from 'src/constants/enum';
 
 export class CreatePostDto {

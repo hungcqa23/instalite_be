@@ -1,30 +1,36 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { PostMessages } from 'src/constants/messages';
-import { FilesService } from 'src/files/files.service';
-import { Post, PostDocument } from 'src/posts/post.schema';
-import { CreatePostDto } from 'src/posts/dto/create-post.dto';
-import { MediaType } from 'src/posts/dto/media.interface';
-import { User, UserDocument } from 'src/users/user.schema';
-import { Like, LikeDocument } from 'src/likes/like.schema';
 import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
 import { PostType } from 'src/constants/enum';
+import { PostMessages } from 'src/constants/messages';
+import { FilesService } from 'src/files/files.service';
+import { Like, LikeDocument } from 'src/likes/like.schema';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { MediaType } from 'src/posts/dto/media.interface';
 import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
+import { Post, PostDocument } from 'src/posts/post.schema';
+import { User, UserDocument } from 'src/users/user.schema';
+
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly filesService: FilesService,
-    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>,
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
+    @InjectModel(Post.name)
+    private readonly postModel: Model<PostDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
+    @InjectModel(Like.name)
+    private readonly likeModel: Model<LikeDocument>,
     @InjectModel(BookMark.name)
     private readonly bookMarkModel: Model<BookMarkDocument>
   ) {}
 
   public async create(
-    postBody: CreatePostDto & { user_id: string }
+    postBody: CreatePostDto & {
+      user_id: string;
+    }
   ): Promise<PostDocument> {
     const [post] = await Promise.all([
       this.postModel.create({
@@ -35,8 +41,14 @@ export class PostsService {
         updated_at: new Date()
       }),
       this.userModel.findOneAndUpdate(
-        { _id: postBody.user_id },
-        { $inc: { posts_count: 1 } }
+        {
+          _id: postBody.user_id
+        },
+        {
+          $inc: {
+            posts_count: 1
+          }
+        }
       )
     ]);
     return post;
@@ -44,7 +56,9 @@ export class PostsService {
 
   public async getPostById(id: string): Promise<PostDocument> {
     const post = await this.postModel
-      .findOne({ _id: id })
+      .findOne({
+        _id: id
+      })
       ?.populate({
         path: 'user_id',
         select: 'username avatar'
@@ -67,9 +81,14 @@ export class PostsService {
   }
 
   public async getPostsByUsername(username: string) {
-    const user = await this.userModel.findOne({ username });
+    const user = await this.userModel.findOne({
+      username
+    });
     const posts = await this.postModel
-      .find({ user_id: user._id, type_post: PostType.NewPost })
+      .find({
+        user_id: user._id,
+        type_post: PostType.NewPost
+      })
       .populate({
         path: 'user_id',
         select: 'username avatar'
@@ -81,9 +100,13 @@ export class PostsService {
   public async uploadMedia(id: string, file?: Express.Multer.File) {
     if (!file) {
       const result = await this.postModel.findOneAndUpdate(
-        { _id: id },
         {
-          $unset: { media: true }
+          _id: id
+        },
+        {
+          $unset: {
+            media: true
+          }
         },
         {
           new: true
@@ -95,15 +118,29 @@ export class PostsService {
     const result = await this.filesService.uploadFile(file);
     if (file.mimetype === 'video/*') {
       await this.postModel.findOneAndUpdate(
-        { _id: id },
-        { media: { url: result.Location, type: MediaType.VIDEO } }
+        {
+          _id: id
+        },
+        {
+          media: {
+            url: result.Location,
+            type: MediaType.VIDEO
+          }
+        }
       );
       return result.Location;
     }
 
     await this.postModel.findOneAndUpdate(
-      { _id: id },
-      { media: { url: result.Location, type: MediaType.IMAGE } }
+      {
+        _id: id
+      },
+      {
+        media: {
+          url: result.Location,
+          type: MediaType.IMAGE
+        }
+      }
     );
     return result.Location;
   }
@@ -111,8 +148,15 @@ export class PostsService {
   public async uploadVideoHLS(file: Express.Multer.File, postId: string) {
     await this.filesService.encodeHLSWithMultipleVideoStreams(file.path);
     await this.postModel.findOneAndUpdate(
-      { _id: postId },
-      { media: { url: file.path, type: MediaType.VIDEO } }
+      {
+        _id: postId
+      },
+      {
+        media: {
+          url: file.path,
+          type: MediaType.VIDEO
+        }
+      }
     );
     return file.path;
   }
@@ -130,12 +174,24 @@ export class PostsService {
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
-        { _id: post.user_id },
-        { $inc: { posts_count: -1 } }
+        {
+          _id: post.user_id
+        },
+        {
+          $inc: {
+            posts_count: -1
+          }
+        }
       ),
-      this.likeModel.deleteMany({ post_id: id }),
-      this.bookMarkModel.deleteMany({ post_id: id }),
-      this.postModel.deleteMany({ parent_post_id: id })
+      this.likeModel.deleteMany({
+        post_id: id
+      }),
+      this.bookMarkModel.deleteMany({
+        post_id: id
+      }),
+      this.postModel.deleteMany({
+        parent_post_id: id
+      })
     ]);
     return post;
   }
@@ -145,7 +201,9 @@ export class PostsService {
       .find({
         type_post: PostType.NewPost
       })
-      .sort({ created_at: -1 })
+      .sort({
+        created_at: -1
+      })
       .populate({
         path: 'user_id',
         select: 'username avatar'
@@ -156,7 +214,10 @@ export class PostsService {
 
   public async getComments(id: string) {
     const comments = await this.postModel
-      .find({ parent_post_id: id, type_post: PostType.Comment })
+      .find({
+        parent_post_id: id,
+        type_post: PostType.Comment
+      })
       .populate({
         path: 'user_id',
         select: 'username avatar'
@@ -166,7 +227,9 @@ export class PostsService {
 
   public async updatePost(id: string, post: UpdatePostDto) {
     const postUpdate = await this.postModel.findOneAndUpdate(
-      { _id: id },
+      {
+        _id: id
+      },
       {
         content: post.content
       },

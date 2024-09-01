@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
-import { GoogleAuthService } from './google-auth.service';
-import { GoogleAuthController } from './google-auth.controller';
-import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { UsersModule } from 'src/users/users.module';
+
+import { Module } from '@nestjs/common';
+
+import { GoogleAuthController } from './google-auth.controller';
+import { GoogleAuthService } from './google-auth.service';
 
 @Module({
   providers: [GoogleAuthService],

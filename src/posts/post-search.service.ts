@@ -1,6 +1,8 @@
+import { Post } from 'src/posts/post.schema';
+
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { Post } from 'src/posts/post.schema';
+
 @Injectable()
 export class PostSearchService {
   private index = 'posts';

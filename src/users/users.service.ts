@@ -1,3 +1,18 @@
+import { Cache } from 'cache-manager';
+import { Model, Types } from 'mongoose';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { NotificationType } from 'src/constants/enum';
+import { UserMessages } from 'src/constants/messages';
+import { FilesService } from 'src/files/files.service';
+import {
+  Notification,
+  NotificationDocument
+} from 'src/notifications/notification.schema';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { Follow, FollowDocument } from 'src/users/follow.schema';
+import { User, UserDocument } from 'src/users/user.schema';
+
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   HttpException,
   HttpStatus,
@@ -6,30 +21,18 @@ import {
   UnauthorizedException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Cache } from 'cache-manager';
-import { User, UserDocument } from 'src/users/user.schema';
-import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { FilesService } from 'src/files/files.service';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { UserMessages } from 'src/constants/messages';
-import { Follow, FollowDocument } from 'src/users/follow.schema';
-import {
-  NotificationDocument,
-  Notification
-} from 'src/notifications/notification.schema';
-import { NotificationType } from 'src/constants/enum';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     @InjectModel(Follow.name)
     private readonly followModel: Model<FollowDocument>,
     @InjectModel(Notification.name)
     private readonly notificationModel: Model<NotificationDocument>,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
     private readonly filesService: FilesService
   ) {}
 
@@ -42,11 +45,15 @@ export class UsersService {
   }
 
   public async findByEmail(email: string): Promise<UserDocument> {
-    return this.userModel.findOne({ email });
+    return this.userModel.findOne({
+      email
+    });
   }
 
   public async getUserByEmail(email: string): Promise<UserDocument | null> {
-    return this.userModel.findOne({ email });
+    return this.userModel.findOne({
+      email
+    });
   }
 
   public async signUpWithGoogle(
@@ -65,8 +72,12 @@ export class UsersService {
 
   public async updateRefreshToken(userId: string, refreshToken: string) {
     await this.userModel.findOneAndUpdate(
-      { _id: userId },
-      { refresh_token: refreshToken }
+      {
+        _id: userId
+      },
+      {
+        refresh_token: refreshToken
+      }
     );
   }
 
@@ -85,20 +96,30 @@ export class UsersService {
 
   public async removeRefreshToken(userId: string) {
     await this.userModel.findOneAndUpdate(
-      { _id: userId },
-      { refresh_token: null }
+      {
+        _id: userId
+      },
+      {
+        refresh_token: null
+      }
     );
   }
 
   public async getUserById(id: string): Promise<UserDocument> {
-    const user = this.userModel.findOne({ _id: id }).select('-password');
+    const user = this.userModel
+      .findOne({
+        _id: id
+      })
+      .select('-password');
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return user;
   }
 
   public async getUserByUsername(username: string, userId: string) {
     const user = await this.userModel
-      .findOne({ username })
+      .findOne({
+        username
+      })
       .select('-password -refresh_token');
     const is_following = await this.followModel.findOne({
       user_id: userId,
@@ -121,7 +142,9 @@ export class UsersService {
     const regex = new RegExp(username, 'i');
     const users = await this.userModel
       .find({
-        username: { $regex: regex }
+        username: {
+          $regex: regex
+        }
       })
       .select('-password -refresh_token');
 
@@ -131,23 +154,33 @@ export class UsersService {
   public async addAvatar(userId: string, fileData: Express.Multer.File) {
     const resultUpload = await this.filesService.uploadFile(fileData);
     const user = await this.userModel.findOneAndUpdate(
-      { _id: userId },
-      { avatar: resultUpload.Location },
-      { new: true }
+      {
+        _id: userId
+      },
+      {
+        avatar: resultUpload.Location
+      },
+      {
+        new: true
+      }
     );
     return user;
   }
 
   public async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findOneAndUpdate(
-      { _id: id },
+      {
+        _id: id
+      },
       {
         ...updateUserDto,
         username: updateUserDto?.username?.toLowerCase(),
         full_name: updateUserDto?.fullName,
         updated_at: new Date()
       },
-      { new: true }
+      {
+        new: true
+      }
     );
     return user;
   }
@@ -166,15 +199,23 @@ export class UsersService {
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
-        { _id: userId },
         {
-          $inc: { following_count: 1 }
+          _id: userId
+        },
+        {
+          $inc: {
+            following_count: 1
+          }
         }
       ),
       this.userModel.findOneAndUpdate(
-        { _id: followedUserId },
         {
-          $inc: { followers_count: 1 }
+          _id: followedUserId
+        },
+        {
+          $inc: {
+            followers_count: 1
+          }
         }
       ),
       this.notificationModel.create({
@@ -199,15 +240,23 @@ export class UsersService {
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
-        { _id: userId },
         {
-          $inc: { following_count: -1 }
+          _id: userId
+        },
+        {
+          $inc: {
+            following_count: -1
+          }
         }
       ),
       this.userModel.findOneAndUpdate(
-        { _id: unFollowedUserId },
         {
-          $inc: { followers_count: -1 }
+          _id: unFollowedUserId
+        },
+        {
+          $inc: {
+            followers_count: -1
+          }
         }
       )
     ]);
@@ -229,7 +278,9 @@ export class UsersService {
     // Exclude the user who I'm currently following
     const users = await this.userModel
       .find({
-        _id: { $nin: followingIds }
+        _id: {
+          $nin: followingIds
+        }
       })
       .select('-password')
       .limit(4);
@@ -238,7 +289,9 @@ export class UsersService {
   }
 
   public async getAllFollowers(username: string) {
-    const userId = await this.userModel.findOne({ username });
+    const userId = await this.userModel.findOne({
+      username
+    });
     const followers = await this.followModel
       .find({
         followed_user_id: userId._id
@@ -249,7 +302,9 @@ export class UsersService {
   }
 
   public async getAllFollowings(username: string) {
-    const userId = await this.userModel.findOne({ username });
+    const userId = await this.userModel.findOne({
+      username
+    });
     const followings = await this.followModel
       .find({
         user_id: userId._id

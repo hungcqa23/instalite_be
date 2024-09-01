@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -46,7 +47,10 @@ export class EmailService {
         }
       },
       Source: fromAddress,
-      ReplyToAddresses: replyToAddresses instanceof Array ? replyToAddresses : [replyToAddresses]
+      ReplyToAddresses:
+        replyToAddresses instanceof Array
+          ? replyToAddresses
+          : [replyToAddresses]
     });
   }
 

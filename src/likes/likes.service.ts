@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Like, LikeDocument } from 'src/likes/like.schema';
 import { Post, PostDocument } from 'src/posts/post.schema';
 
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
 @Injectable()
 export class LikesService {
   constructor(
-    @InjectModel(Like.name) private readonly likeModel: Model<LikeDocument>,
-    @InjectModel(Post.name) private readonly postModel: Model<PostDocument>
+    @InjectModel(Like.name)
+    private readonly likeModel: Model<LikeDocument>,
+    @InjectModel(Post.name)
+    private readonly postModel: Model<PostDocument>
   ) {}
   async likePost(userId: string, postId: string) {
     if (!(await this.isLikedPost(userId, postId))) {

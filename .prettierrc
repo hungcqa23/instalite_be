@@ -7,5 +7,9 @@
   "useTabs": false,
   "singleQuote": true,
   "printWidth": 80,
-  "jsxSingleQuote": true
+  "importOrderParserPlugins": ["typescript", "decorators-legacy"],
+  "importOrder": ["^@nestjs/(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }

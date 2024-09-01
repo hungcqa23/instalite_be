@@ -1,3 +1,8 @@
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { LikePostDto } from 'src/likes/dto/like.dto';
+import { LikesService } from 'src/likes/likes.service';
+
 import {
   Body,
   Controller,
@@ -8,10 +13,6 @@ import {
   Req,
   UseGuards
 } from '@nestjs/common';
-import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
-import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
-import { LikePostDto } from 'src/likes/dto/like.dto';
-import { LikesService } from 'src/likes/likes.service';
 
 @UseGuards(JwtAccessTokenGuard)
 @Controller('likes')
@@ -20,8 +21,10 @@ export class LikesController {
 
   @Post()
   public async likePost(
-    @Req() req: RequestWithUser,
-    @Body() likePostDto: LikePostDto
+    @Req()
+    req: RequestWithUser,
+    @Body()
+    likePostDto: LikePostDto
   ) {
     const result = await this.likesService.likePost(
       req.user._id,
@@ -36,8 +39,10 @@ export class LikesController {
 
   @Delete()
   public async unlikePost(
-    @Req() req: RequestWithUser,
-    @Body() unlikePostDto: LikePostDto
+    @Req()
+    req: RequestWithUser,
+    @Body()
+    unlikePostDto: LikePostDto
   ) {
     const result = await this.likesService.unlikePost(
       req.user._id,
@@ -51,8 +56,10 @@ export class LikesController {
 
   @Get(':postId')
   public async isLikedPost(
-    @Req() req: RequestWithUser,
-    @Param('postId') postId: string
+    @Req()
+    req: RequestWithUser,
+    @Param('postId')
+    postId: string
   ) {
     const result = await this.likesService.isLikedPost(req.user._id, postId);
 

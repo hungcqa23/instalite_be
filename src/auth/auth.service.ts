@@ -1,12 +1,17 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import { LogInDto } from 'src/auth/dtos/log-in.dto';
 import { UserMessages } from 'src/constants/messages';
-import { Response } from 'express';
+import { UsersService } from 'src/users/users.service';
+
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +29,14 @@ export class AuthService {
         ...createUserDto,
         password: hashedPassword
       });
-      const token = await this.signRefreshAndAccessTokens(newUser._id, newUser.username);
-      await this.usersService.updateRefreshToken(newUser._id, token.refreshToken);
+      const token = await this.signRefreshAndAccessTokens(
+        newUser._id,
+        newUser.username
+      );
+      await this.usersService.updateRefreshToken(
+        newUser._id,
+        token.refreshToken
+      );
       return token;
     } catch (error) {
       throw new BadRequestException('Email or username already in use');
@@ -37,9 +48,16 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('User is not found');
 
-    const isPasswordValid = await bcrypt.compare(logInDto.password, user.password);
-    if (!isPasswordValid) throw new UnauthorizedException(`Password doesn't match`);
-    const tokens = await this.signRefreshAndAccessTokens(user._id, user.username);
+    const isPasswordValid = await bcrypt.compare(
+      logInDto.password,
+      user.password
+    );
+    if (!isPasswordValid)
+      throw new UnauthorizedException(`Password doesn't match`);
+    const tokens = await this.signRefreshAndAccessTokens(
+      user._id,
+      user.username
+    );
     await this.usersService.updateRefreshToken(user._id, tokens.refreshToken);
     return tokens;
   }
@@ -62,7 +80,9 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
+          expiresIn: this.configService.get<string>(
+            'JWT_ACCESS_TOKEN_EXPIRATION_TIME'
+          )
         }
       ),
       this.jwtService.signAsync(
@@ -72,13 +92,18 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME')
+          expiresIn: this.configService.get<string>(
+            'JWT_REFRESH_TOKEN_EXPIRATION_TIME'
+          )
         }
       )
     ]);
     await this.usersService.updateRefreshToken(userId, refreshToken);
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken
+    };
   }
 
   public sendCookie(res: Response, key: string, value: string) {

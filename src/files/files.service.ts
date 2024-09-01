@@ -1,12 +1,15 @@
 import { S3 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
+import { Queue } from 'bullmq';
+import fs from 'fs';
+import * as path from 'path';
+import { EncodeByResolution } from 'src/files/types/encode.type';
+import { v4 as uuidv4 } from 'uuid';
+
+import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { v4 as uuidv4 } from 'uuid';
-import * as path from 'path';
-import fs from 'fs';
-import { EncodeByResolution } from 'src/files/types/encode.type';
-import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
 
 @Injectable()
 export class FilesService {
@@ -20,7 +23,10 @@ export class FilesService {
   private items: string[];
   private encoding: boolean;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    @InjectQueue('files') private filesQueue: Queue
+  ) {
     this.s3 = new S3({
       region: configService.get<string>('AWS_REGION'),
       credentials: {

@@ -1,10 +1,11 @@
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Injectable, mixin, NestInterceptor, Type } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import * as fs from 'fs';
 import { diskStorage } from 'multer';
 import * as path from 'path';
-import * as fs from 'fs';
+
+import { Injectable, NestInterceptor, Type, mixin } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 interface LocalFilesInterceptorOptions {
   fieldName: string;
@@ -37,7 +38,9 @@ function LocalFilesInterceptor(
               pathName,
               options.path || req.params.id
             );
-            fs.mkdirSync(filesDestination, { recursive: true });
+            fs.mkdirSync(filesDestination, {
+              recursive: true
+            });
             cb(null, filesDestination);
           },
           filename: (req, file, cb) => {

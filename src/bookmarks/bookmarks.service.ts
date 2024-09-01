@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
+
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class BookmarksService {
@@ -20,7 +21,10 @@ export class BookmarksService {
         user_id: userId,
         post_id: new Types.ObjectId(postId)
       },
-      { upsert: true, new: true }
+      {
+        upsert: true,
+        new: true
+      }
     );
 
     return result;
@@ -37,7 +41,9 @@ export class BookmarksService {
 
   public async getBookmarkedPosts(userId: string) {
     const result = await this.bookMarkModel
-      .find({ user_id: userId })
+      .find({
+        user_id: userId
+      })
       .populate('post_id')
       .populate('user_id', 'username avatar');
 
@@ -54,7 +60,9 @@ export class BookmarksService {
 
   public async getAllBookmarkedPosts(userId: string) {
     const result = await this.bookMarkModel
-      .find({ user_id: userId })
+      .find({
+        user_id: userId
+      })
       .populate('post_id')
       .populate({
         path: 'post_id',
