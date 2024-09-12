@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { TokenPayLoad } from '~/auth/types/tokens.type';
-import { UsersService } from '~/users/users.service';
+import { TokenPayLoad } from 'src/auth/types/tokens.type';
+import { UsersService } from 'src/users/users.service';
 
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -18,9 +18,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          return request?.cookies?.refresh_token;
-        }
+        (request: Request) => request?.cookies?.refresh_token
       ]),
       secretOrKey: configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       passReqToCallback: true

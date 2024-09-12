@@ -1,4 +1,4 @@
-import { BookMark, BookMarkSchema } from '~/bookmarks/bookmarks.schema';
+import { BookMark, BookMarkSchema } from 'src/bookmarks/bookmarks.schema';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';

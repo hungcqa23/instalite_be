@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { FilesService } from '~/files/files.service';
+import { FilesService } from 'src/files/files.service';
 
 import {
   Body,

@@ -1,7 +1,5 @@
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { WinstonModule } from 'nest-winston';
-import instanceLogger from '~/logger/wiston-config.logger';
 
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

@@ -1,14 +1,14 @@
 import { Model } from 'mongoose';
-import { BookMark, BookMarkDocument } from '~/bookmarks/bookmarks.schema';
-import { PostType } from '~/constants/enum';
-import { PostMessages } from '~/constants/messages';
-import { FilesService } from '~/files/files.service';
-import { Like, LikeDocument } from '~/likes/like.schema';
-import { CreatePostDto } from '~/posts/dto/create-post.dto';
-import { MediaType } from '~/posts/dto/media.interface';
-import { UpdatePostDto } from '~/posts/dto/update-post.dto';
-import { Post, PostDocument } from '~/posts/post.schema';
-import { User, UserDocument } from '~/users/user.schema';
+import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
+import { PostType } from 'src/constants/enum';
+import { PostMessages } from 'src/constants/messages';
+import { FilesService } from 'src/files/files.service';
+import { Like, LikeDocument } from 'src/likes/like.schema';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { MediaType } from 'src/posts/dto/media.interface';
+import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
+import { Post, PostDocument } from 'src/posts/post.schema';
+import { User, UserDocument } from 'src/users/user.schema';
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';

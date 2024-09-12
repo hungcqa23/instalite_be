@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose';
 import {
   Notification,
   NotificationDocument
-} from '~/notifications/notification.schema';
+} from 'src/notifications/notification.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';

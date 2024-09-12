@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
-import { PostType } from '~/constants/enum';
-import { Media, MediaType } from '~/posts/dto/media.interface';
-import { User } from '~/users/user.schema';
+import { PostType } from 'src/constants/enum';
+import { Media, MediaType } from 'src/posts/dto/media.interface';
+import { User } from 'src/users/user.schema';
 
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 

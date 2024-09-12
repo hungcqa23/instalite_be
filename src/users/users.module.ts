@@ -1,9 +1,9 @@
-import { BookmarksModule } from '~/bookmarks/bookmarks.module';
-import { FilesModule } from '~/files/files.module';
-import { LikesModule } from '~/likes/likes.module';
-import { NotificationsModule } from '~/notifications/notifications.module';
-import { Follow, FollowSchema } from '~/users/follow.schema';
-import { User, UserSchema } from '~/users/user.schema';
+import { BookmarksModule } from 'src/bookmarks/bookmarks.module';
+import { FilesModule } from 'src/files/files.module';
+import { LikesModule } from 'src/likes/likes.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
+import { Follow, FollowSchema } from 'src/users/follow.schema';
+import { User, UserSchema } from 'src/users/user.schema';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';

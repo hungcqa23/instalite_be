@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
-import { Like, LikeDocument } from '~/likes/like.schema';
-import { Post, PostDocument } from '~/posts/post.schema';
+import { Like, LikeDocument } from 'src/likes/like.schema';
+import { Post, PostDocument } from 'src/posts/post.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';

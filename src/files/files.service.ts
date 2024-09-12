@@ -4,8 +4,8 @@ import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
 import { Queue } from 'bullmq';
 import fs from 'fs';
 import * as path from 'path';
+import { EncodeByResolution } from 'src/files/types/encode.type';
 import { v4 as uuidv4 } from 'uuid';
-import { EncodeByResolution } from '~/files/types/encode.type';
 
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';

@@ -1,6 +1,6 @@
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { NotificationsService } from '~/notifications/notifications.service';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 

@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { NotificationType } from '~/constants/enum';
+import { NotificationType } from 'src/constants/enum';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 

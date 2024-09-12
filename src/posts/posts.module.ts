@@ -1,8 +1,8 @@
-import { BookmarksModule } from '~/bookmarks/bookmarks.module';
-import { FilesModule } from '~/files/files.module';
-import { LikesModule } from '~/likes/likes.module';
-import { Post, PostSchema } from '~/posts/post.schema';
-import { UsersModule } from '~/users/users.module';
+import { BookmarksModule } from 'src/bookmarks/bookmarks.module';
+import { FilesModule } from 'src/files/files.module';
+import { LikesModule } from 'src/likes/likes.module';
+import { Post, PostSchema } from 'src/posts/post.schema';
+import { UsersModule } from 'src/users/users.module';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';

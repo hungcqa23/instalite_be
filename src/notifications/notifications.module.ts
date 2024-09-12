@@ -1,7 +1,7 @@
 import {
   Notification,
   NotificationSchema
-} from '~/notifications/notification.schema';
+} from 'src/notifications/notification.schema';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';

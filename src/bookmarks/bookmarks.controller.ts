@@ -1,7 +1,7 @@
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { BookmarksService } from '~/bookmarks/bookmarks.service';
-import { CreateBookMarkDto } from '~/bookmarks/dto/create-bookmark.dto';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { BookmarksService } from 'src/bookmarks/bookmarks.service';
+import { CreateBookMarkDto } from 'src/bookmarks/dto/create-bookmark.dto';
 
 import {
   Body,

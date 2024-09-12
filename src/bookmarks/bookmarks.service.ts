@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { BookMark, BookMarkDocument } from '~/bookmarks/bookmarks.schema';
+import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';

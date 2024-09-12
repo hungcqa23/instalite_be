@@ -1,10 +1,10 @@
-import { AuthController } from '~/auth/auth.controller';
-import { AuthService } from '~/auth/auth.service';
-import { JwtStrategy } from '~/auth/jwt-access-token.strategy';
-import { JwtRefreshTokenStrategy } from '~/auth/jwt-refresh-token.strategy';
-import { LocalStrategy } from '~/auth/local.strategy';
-import { EmailModule } from '~/email/email.module';
-import { UsersModule } from '~/users/users.module';
+import { AuthController } from 'src/auth/auth.controller';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtStrategy } from 'src/auth/jwt-access-token.strategy';
+import { JwtRefreshTokenStrategy } from 'src/auth/jwt-refresh-token.strategy';
+import { LocalStrategy } from 'src/auth/local.strategy';
+import { EmailModule } from 'src/email/email.module';
+import { UsersModule } from 'src/users/users.module';
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';

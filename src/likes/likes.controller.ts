@@ -1,7 +1,7 @@
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { LikePostDto } from '~/likes/dto/like.dto';
-import { LikesService } from '~/likes/likes.service';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { LikePostDto } from 'src/likes/dto/like.dto';
+import { LikesService } from 'src/likes/likes.service';
 
 import {
   Body,

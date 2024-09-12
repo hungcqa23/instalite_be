@@ -1,24 +1,29 @@
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { CreateUserDto } from '~/auth/dtos/create-user.dto';
-import { LogInDto } from '~/auth/dtos/log-in.dto';
-import { UserMessages } from '~/constants/messages';
-import { UsersService } from '~/users/users.service';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { UserMessages } from 'src/constants/messages';
+import { UsersService } from 'src/users/users.service';
 
 import {
   BadRequestException,
+  Inject,
   Injectable,
-  UnauthorizedException
+  Logger
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
+  private readonly SERVICE_NAME = AuthService.name;
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    @Inject(WINSTON_MODULE_PROVIDER)
+    private readonly logger: Logger
   ) {}
 
   public async signUp(createUserDto: CreateUserDto) {
@@ -37,32 +42,17 @@ export class AuthService {
         newUser._id.toString(),
         token.refreshToken
       );
+
+      this.logger.log({
+        level: 'info',
+        message: `User signed up successfully - ${newUser._id.toString()}`,
+        context: this.SERVICE_NAME
+      });
+
       return token;
-    } catch (error) {
+    } catch {
       throw new BadRequestException('Email or username already in use');
     }
-  }
-
-  public async logIn(logInDto: LogInDto) {
-    const user = await this.usersService.findByEmail(logInDto.email);
-
-    if (!user) throw new UnauthorizedException('User is not found');
-
-    const isPasswordValid = await bcrypt.compare(
-      logInDto.password,
-      user.password
-    );
-    if (!isPasswordValid)
-      throw new UnauthorizedException(`Password doesn't match`);
-    const tokens = await this.signRefreshAndAccessTokens(
-      user._id.toString(),
-      user.username
-    );
-    await this.usersService.updateRefreshToken(
-      user._id.toString(),
-      tokens.refreshToken
-    );
-    return tokens;
   }
 
   public async getAuthenticatedUser(email: string, password: string) {

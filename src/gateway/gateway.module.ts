@@ -1,4 +1,4 @@
-import { MyGateway } from '~/gateway/gateway';
+import { MyGateway } from 'src/gateway/gateway';
 
 import { Module } from '@nestjs/common';
 

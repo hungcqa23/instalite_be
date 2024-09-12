@@ -1,16 +1,16 @@
 import { Cache } from 'cache-manager';
 import { Model, Types } from 'mongoose';
-import { CreateUserDto } from '~/auth/dtos/create-user.dto';
-import { NotificationType } from '~/constants/enum';
-import { UserMessages } from '~/constants/messages';
-import { FilesService } from '~/files/files.service';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { NotificationType } from 'src/constants/enum';
+import { UserMessages } from 'src/constants/messages';
+import { FilesService } from 'src/files/files.service';
 import {
   Notification,
   NotificationDocument
-} from '~/notifications/notification.schema';
-import { UpdateUserDto } from '~/users/dto/update-user.dto';
-import { Follow, FollowDocument } from '~/users/follow.schema';
-import { User, UserDocument } from '~/users/user.schema';
+} from 'src/notifications/notification.schema';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { Follow, FollowDocument } from 'src/users/follow.schema';
+import { User, UserDocument } from 'src/users/user.schema';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
@@ -18,14 +18,13 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  Logger,
   UnauthorizedException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
-  private readonly SERVICE: string = UsersService.name;
+  private readonly SERVICE_NAME = UsersService.name;
 
   constructor(
     @InjectModel(User.name)
@@ -36,8 +35,7 @@ export class UsersService {
     private readonly notificationModel: Model<NotificationDocument>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
-    private readonly filesService: FilesService,
-    private readonly logger: Logger
+    private readonly filesService: FilesService
   ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -46,8 +44,6 @@ export class UsersService {
     const userJSON = JSON.stringify(user);
     await this.cacheManager.set(userId, userJSON);
 
-    // user logger
-    this.logger.log(`User created successfully - ${userId}`, this.SERVICE);
     return user;
   }
 

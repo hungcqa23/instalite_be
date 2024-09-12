@@ -1,11 +1,11 @@
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { PostMessages } from '~/constants/messages';
-import LocalFilesInterceptor from '~/files/interceptor/local-file.interceptor';
-import { CreatePostDto } from '~/posts/dto/create-post.dto';
-import { GetPostDto } from '~/posts/dto/get-post.dto';
-import { UpdatePostDto } from '~/posts/dto/update-post.dto';
-import { PostsService } from '~/posts/posts.service';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { PostMessages } from 'src/constants/messages';
+import LocalFilesInterceptor from 'src/files/interceptor/local-file.interceptor';
+import { CreatePostDto } from 'src/posts/dto/create-post.dto';
+import { GetPostDto } from 'src/posts/dto/get-post.dto';
+import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
+import { PostsService } from 'src/posts/posts.service';
 
 import {
   Body,

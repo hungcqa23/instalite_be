@@ -1,15 +1,15 @@
 import { Cache } from 'cache-manager';
 import { Response } from 'express';
-import { AuthService } from '~/auth/auth.service';
-import { CreateUserDto } from '~/auth/dtos/create-user.dto';
-import { LogInDto } from '~/auth/dtos/log-in.dto';
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { JwtRefreshGuard } from '~/auth/jwt-refresh.guard';
-import { LocalAuthenticationGuard } from '~/auth/local-authentication.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { UserMessages } from '~/constants/messages';
-import { EmailService } from '~/email/email.service';
-import { UsersService } from '~/users/users.service';
+import { AuthService } from 'src/auth/auth.service';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { LogInDto } from 'src/auth/dtos/log-in.dto';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { JwtRefreshGuard } from 'src/auth/jwt-refresh.guard';
+import { LocalAuthenticationGuard } from 'src/auth/local-authentication.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { UserMessages } from 'src/constants/messages';
+import { EmailService } from 'src/email/email.service';
+import { UsersService } from 'src/users/users.service';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {

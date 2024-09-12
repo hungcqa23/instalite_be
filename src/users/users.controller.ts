@@ -1,13 +1,13 @@
 import { Response } from 'express';
-import { CreateUserDto } from '~/auth/dtos/create-user.dto';
-import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
-import { RequestWithUser } from '~/auth/types/request-with-user.interface';
-import { UserMessages } from '~/constants/messages';
-import { CreateFollowDto } from '~/users/dto/create-follow.dto';
-import { FileUploadDto } from '~/users/dto/file-upload.dto';
-import { UnFollowDto } from '~/users/dto/un-follow-dto';
-import { UpdateUserDto } from '~/users/dto/update-user.dto';
-import { UsersService } from '~/users/users.service';
+import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
+import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
+import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
+import { UserMessages } from 'src/constants/messages';
+import { CreateFollowDto } from 'src/users/dto/create-follow.dto';
+import { FileUploadDto } from 'src/users/dto/file-upload.dto';
+import { UnFollowDto } from 'src/users/dto/un-follow-dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { UsersService } from 'src/users/users.service';
 
 import {
   Body,
