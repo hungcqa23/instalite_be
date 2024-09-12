@@ -1,73 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Instalite Backend
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Instalite is a social media platform backend built with NestJS, MongoDB, and various other technologies such as ffmpeg, Gemini, etc... It provides a robust API for managing users, posts, likes, bookmarks, and file uploads. This project serves as the server-side component for a Instagram-like application, offering features such as user authentication, post creation and management, and social interactions.
+
+Key features include:
+
+- User authentication with JWT
+- Post creation and management
+- Like functionality
+- Bookmark system
+- File uploads (images for posts)
+- Caching with Redis
+- Logging with Winston
+- Swagger API documentation
+
+## Project Structure
+
+The project follows a modular structure with the main components organized as follows:
+
+- `src/`: Contains the main application code
+  - `auth/`: Authentication-related modules and services
+  - `bookmarks/`: Bookmark functionality
+  - `files/`: File handling and uploads
+  - `likes/`: Like functionality
+  - `posts/`: Post-related modules and services
+  - `users/`: User management
+  - `notifications/`: Notification system
+  - `search/`: Search functionality (placeholder for future implementation)
+  - `config/`: Configuration files and environment variables
+  - `constants/`: Constant values and enums
+  - `gateway/`: WebSocket gateway
+  - `global/`: Global modules and services
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- Node.js (v20.14.0 or later)
+- npm (comes with Node.js)
+- MongoDB
+- Redis
+- Docker
+- ...
 
 ## Installation
 
-```bash
-$ npm install
-```
+1. Clone the repository:
 
-## Running the app
+   ```bash
+   git clone <your-repository-url>
+   cd instalite_be
+   ```
 
-```bash
-# development
-$ npm run start
+2. Install dependencies:
 
-# watch mode
-$ npm run start:dev
+   ```bash
+   npm install
+   ```
 
-# production mode
-$ npm run start:prod
-```
+3. Set up environment variables:
+   Create a `.env` file (template `.env.example`) in the root directory and add the necessary environment variables. Refer to the `baseConfig` in `src/config/base.config.ts` for the required variables.
 
-## Test
+## Before running the project
 
-```bash
-# unit tests
-$ npm run test
+1. Start the Docker containers:
 
-# e2e tests
-$ npm run test:e2e
+   ```bash
+   docker-compose up -d
+   ```
 
-# test coverage
-$ npm run test:cov
-```
+## Running the Project
 
-## Support
+1. Start the development server:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+   ```bash
+   npm run start:dev
+   ```
 
-## Stay in touch
+   This will start the server in watch mode, automatically restarting on file changes.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. For production:
 
-## License
+   ```bash
+   npm run build
+   npm run start:prod
+   ```
 
-Nest is [MIT licensed](LICENSE).
+3. The server will start running on `http://localhost:8000` by default (unless specified otherwise in your `.env` file).
+
+## API Documentation
+
+Once the server is running, you can access the Swagger UI for API documentation:
+
+- Open your browser and navigate to `http://localhost:8000/api`
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
