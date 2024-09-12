@@ -1,9 +1,11 @@
 import { redisStore } from 'cache-manager-redis-store';
-import baseConfig, { validationSchema } from 'src/config/base.config';
+import { WinstonModule } from 'nest-winston';
+import baseConfig, { validationSchema } from '~/config/base.config';
+import instanceLogger from '~/logger/wiston-config.logger';
 
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -40,7 +42,8 @@ import { UsersModule } from './users/users.module';
             host: configService.get<string>('REDIS_HOST'),
             port: configService.get<number>('REDIS_PORT')
           },
-          url: configService.get<string>('REDIS_URI')
+          url: configService.get<string>('REDIS_URI'),
+          store: 'none'
         })
       })
     }),
@@ -60,6 +63,9 @@ import { UsersModule } from './users/users.module';
       }),
       inject: [ConfigService]
     }),
+    WinstonModule.forRoot({
+      instance: instanceLogger
+    }),
     AuthModule,
     GoogleAuthModule,
     EmailModule,
@@ -73,6 +79,6 @@ import { UsersModule } from './users/users.module';
     ConfigModule
     // GatewayModule
   ],
-  providers: [EmailService]
+  providers: [EmailService, Logger]
 })
 export class AppModule {}

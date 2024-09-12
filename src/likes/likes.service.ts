@@ -1,6 +1,6 @@
 import { Model } from 'mongoose';
-import { Like, LikeDocument } from 'src/likes/like.schema';
-import { Post, PostDocument } from 'src/posts/post.schema';
+import { Like, LikeDocument } from '~/likes/like.schema';
+import { Post, PostDocument } from '~/posts/post.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -24,11 +24,11 @@ export class LikesService {
 
     const result = await this.likeModel.findOneAndUpdate(
       {
-        user_id: userId,
+        userId: userId,
         post_id: postId
       },
       {
-        user_id: userId,
+        userId: userId,
         post_id: postId
       },
       {
@@ -49,7 +49,7 @@ export class LikesService {
       });
 
     const result = await this.likeModel.findOneAndDelete({
-      user_id: userId,
+      userId: userId,
       post_id: postId
     });
 
@@ -58,7 +58,7 @@ export class LikesService {
 
   async isLikedPost(userId: string, postId: string) {
     const result = await this.likeModel.findOne({
-      user_id: userId,
+      userId: userId,
       post_id: postId
     });
     return result ? true : false;

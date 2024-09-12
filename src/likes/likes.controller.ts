@@ -1,7 +1,7 @@
-import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
-import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
-import { LikePostDto } from 'src/likes/dto/like.dto';
-import { LikesService } from 'src/likes/likes.service';
+import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
+import { RequestWithUser } from '~/auth/types/request-with-user.interface';
+import { LikePostDto } from '~/likes/dto/like.dto';
+import { LikesService } from '~/likes/likes.service';
 
 import {
   Body,
@@ -27,7 +27,7 @@ export class LikesController {
     likePostDto: LikePostDto
   ) {
     const result = await this.likesService.likePost(
-      req.user._id,
+      req.user._id.toString(),
       likePostDto.postId
     );
 
@@ -45,11 +45,11 @@ export class LikesController {
     unlikePostDto: LikePostDto
   ) {
     const result = await this.likesService.unlikePost(
-      req.user._id,
+      req.user._id.toString(),
       unlikePostDto.postId
     );
     return {
-      message: 'Unliked post',
+      message: 'Unlike post',
       result
     };
   }
@@ -61,7 +61,10 @@ export class LikesController {
     @Param('postId')
     postId: string
   ) {
-    const result = await this.likesService.isLikedPost(req.user._id, postId);
+    const result = await this.likesService.isLikedPost(
+      req.user._id.toString(),
+      postId
+    );
 
     return {
       message: 'Check if post is liked',

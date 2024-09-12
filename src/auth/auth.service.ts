@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { LogInDto } from 'src/auth/dtos/log-in.dto';
-import { UserMessages } from 'src/constants/messages';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from '~/auth/dtos/create-user.dto';
+import { LogInDto } from '~/auth/dtos/log-in.dto';
+import { UserMessages } from '~/constants/messages';
+import { UsersService } from '~/users/users.service';
 
 import {
   BadRequestException,
@@ -30,11 +30,11 @@ export class AuthService {
         password: hashedPassword
       });
       const token = await this.signRefreshAndAccessTokens(
-        newUser._id,
+        newUser._id.toString(),
         newUser.username
       );
       await this.usersService.updateRefreshToken(
-        newUser._id,
+        newUser._id.toString(),
         token.refreshToken
       );
       return token;
@@ -55,10 +55,13 @@ export class AuthService {
     if (!isPasswordValid)
       throw new UnauthorizedException(`Password doesn't match`);
     const tokens = await this.signRefreshAndAccessTokens(
-      user._id,
+      user._id.toString(),
       user.username
     );
-    await this.usersService.updateRefreshToken(user._id, tokens.refreshToken);
+    await this.usersService.updateRefreshToken(
+      user._id.toString(),
+      tokens.refreshToken
+    );
     return tokens;
   }
 

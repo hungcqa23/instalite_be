@@ -1,13 +1,13 @@
 import { Response } from 'express';
-import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
-import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
-import { UserMessages } from 'src/constants/messages';
-import { CreateFollowDto } from 'src/users/dto/create-follow.dto';
-import { FileUploadDto } from 'src/users/dto/file-upload.dto';
-import { UnFollowDto } from 'src/users/dto/un-follow-dto';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { UsersService } from 'src/users/users.service';
+import { CreateUserDto } from '~/auth/dtos/create-user.dto';
+import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
+import { RequestWithUser } from '~/auth/types/request-with-user.interface';
+import { UserMessages } from '~/constants/messages';
+import { CreateFollowDto } from '~/users/dto/create-follow.dto';
+import { FileUploadDto } from '~/users/dto/file-upload.dto';
+import { UnFollowDto } from '~/users/dto/un-follow-dto';
+import { UpdateUserDto } from '~/users/dto/update-user.dto';
+import { UsersService } from '~/users/users.service';
 
 import {
   Body,
@@ -82,7 +82,10 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const user = await this.usersService.addAvatar(req.user._id, file);
+    const user = await this.usersService.addAvatar(
+      req.user._id.toString(),
+      file
+    );
 
     return {
       message: UserMessages.UPLOAD_AVATAR_SUCCESSFULLY,
@@ -96,7 +99,7 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const user = await this.usersService.getUserById(req.user._id);
+    const user = await this.usersService.getUserById(req.user._id.toString());
     if (!user)
       throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return {
@@ -114,7 +117,7 @@ export class UsersController {
     updateUserDto: UpdateUserDto
   ) {
     const user = await this.usersService.updateUser(
-      req.user._id,
+      req.user._id.toString(),
       updateUserDto
     );
     return {
@@ -129,7 +132,9 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const users = await this.usersService.getRecommendUsers(req.user._id);
+    const users = await this.usersService.getRecommendUsers(
+      req.user._id.toString()
+    );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       users
@@ -146,7 +151,7 @@ export class UsersController {
   ) {
     const user = await this.usersService.getUserByUsername(
       username,
-      req.user._id
+      req.user._id.toString()
     );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
@@ -161,7 +166,10 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const result = await this.usersService.checkFollow(req.user._id, username);
+    const result = await this.usersService.checkFollow(
+      req.user._id.toString(),
+      username
+    );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       result
@@ -203,7 +211,7 @@ export class UsersController {
     res: Response
   ) {
     const result = await this.usersService.createFollow(
-      req.user._id,
+      req.user._id.toString(),
       createFollowDto.followedUserId
     );
 
@@ -223,7 +231,7 @@ export class UsersController {
     res: Response
   ) {
     const result = await this.usersService.unfollow(
-      req.user._id,
+      req.user._id.toString(),
       unfollowDto.followedUserId
     );
 

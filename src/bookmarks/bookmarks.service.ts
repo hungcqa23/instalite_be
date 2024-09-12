@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
+import { BookMark, BookMarkDocument } from '~/bookmarks/bookmarks.schema';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,11 +14,11 @@ export class BookmarksService {
   public async bookmarkPost(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOneAndUpdate(
       {
-        user_id: userId,
+        userId: userId,
         post_id: postId
       },
       {
-        user_id: userId,
+        userId: userId,
         post_id: new Types.ObjectId(postId)
       },
       {
@@ -32,7 +32,7 @@ export class BookmarksService {
 
   public async unBookmark(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOneAndDelete({
-      user_id: new Types.ObjectId(userId),
+      userId: new Types.ObjectId(userId),
       post_id: new Types.ObjectId(postId)
     });
 
@@ -42,17 +42,17 @@ export class BookmarksService {
   public async getBookmarkedPosts(userId: string) {
     const result = await this.bookMarkModel
       .find({
-        user_id: userId
+        userId: userId
       })
       .populate('post_id')
-      .populate('user_id', 'username avatar');
+      .populate('userId', 'username avatar');
 
     return result;
   }
 
   public async isBookmarkedPost(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOne({
-      user_id: userId,
+      userId: userId,
       post_id: new Types.ObjectId(postId) // postId
     });
     return result ? true : false;
@@ -61,13 +61,13 @@ export class BookmarksService {
   public async getAllBookmarkedPosts(userId: string) {
     const result = await this.bookMarkModel
       .find({
-        user_id: userId
+        userId: userId
       })
       .populate('post_id')
       .populate({
         path: 'post_id',
         populate: {
-          path: 'user_id',
+          path: 'userId',
           select: 'username avatar'
         }
       });

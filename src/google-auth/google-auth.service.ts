@@ -1,7 +1,7 @@
 import { Auth, google } from 'googleapis';
-import { AuthService } from 'src/auth/auth.service';
-import { UserDocument } from 'src/users/user.schema';
-import { UsersService } from 'src/users/users.service';
+import { AuthService } from '~/auth/auth.service';
+import { UserDocument } from '~/users/user.schema';
+import { UsersService } from '~/users/users.service';
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -39,7 +39,7 @@ export class GoogleAuthService {
   }
 
   private async handleRegisteredUser(user: UserDocument) {
-    if (!user.is_registered_via_oauth_google) throw new UnauthorizedException();
+    if (!user.isRegisteredViaOauthGoogle) throw new UnauthorizedException();
 
     // const { accessTokenCookie, refreshTokenCookie } = await this.getCookiesForUser(user);
 

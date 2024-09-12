@@ -23,22 +23,22 @@ export class User {
   email: string;
 
   @Prop()
-  full_name: string;
+  fullName: string;
 
   @Prop({
     default: 0
   })
-  followers_count: number;
+  followersCount: number;
 
   @Prop({
     default: 0
   })
-  following_count: number;
+  followingCount: number;
 
   @Prop({
     default: 0
   })
-  posts_count: number;
+  postsCount: number;
 
   @Prop()
   bio: string;
@@ -47,21 +47,21 @@ export class User {
   avatar: string;
 
   @Prop()
-  date_of_birth: Date;
+  dateOfBirth: Date;
 
   @Prop()
-  refresh_token: string;
+  refreshToken: string;
 
   @Prop()
-  created_at: Date;
+  createdAt: Date;
 
   @Prop()
-  updated_at: Date;
+  updatedAt: Date;
 
   @Prop({
     default: false
   })
-  is_registered_via_oauth_google: boolean;
+  isRegisteredViaOauthGoogle: boolean;
 }
 
 const UserSchema = SchemaFactory.createForClass(User);

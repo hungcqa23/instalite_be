@@ -1,5 +1,6 @@
+import { MyGateway } from '~/gateway/gateway';
+
 import { Module } from '@nestjs/common';
-import { MyGateway } from 'src/gateway/gateway';
 
 @Module({
   imports: [MyGateway]

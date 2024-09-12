@@ -1,7 +1,7 @@
 import mongoose, { Document } from 'mongoose';
-import { PostType } from 'src/constants/enum';
-import { Media, MediaType } from 'src/posts/dto/media.interface';
-import { User } from 'src/users/user.schema';
+import { PostType } from '~/constants/enum';
+import { Media, MediaType } from '~/posts/dto/media.interface';
+import { User } from '~/users/user.schema';
 
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';
 
@@ -14,7 +14,7 @@ export class Post {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   })
-  user_id: User;
+  userId: User;
 
   @Prop({
     required: true
@@ -65,7 +65,7 @@ export class Post {
     required: true,
     default: Date.now
   })
-  created_at: Date;
+  createdAt: Date;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

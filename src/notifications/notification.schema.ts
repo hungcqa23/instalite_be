@@ -1,5 +1,5 @@
 import { Document, Types } from 'mongoose';
-import { NotificationType } from 'src/constants/enum';
+import { NotificationType } from '~/constants/enum';
 
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
@@ -21,13 +21,13 @@ export class Notification {
     type: Types.ObjectId,
     ref: 'User'
   })
-  user_id: Types.ObjectId;
+  userId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
     ref: 'User'
   })
-  user_receiver_id: Types.ObjectId;
+  userReceiverId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
@@ -43,7 +43,7 @@ export class Notification {
   @Prop({
     default: Date.now
   })
-  created_at: Date;
+  createdAt: Date;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

@@ -1,6 +1,6 @@
 import 'express';
-import { GoogleAuthService } from 'src/google-auth/google-auth.service';
-import TokenVerificationDto from 'src/google-auth/token-verification.dto';
+import { GoogleAuthService } from '~/google-auth/google-auth.service';
+import TokenVerificationDto from '~/google-auth/token-verification.dto';
 
 import { Body, Controller, Post } from '@nestjs/common';
 

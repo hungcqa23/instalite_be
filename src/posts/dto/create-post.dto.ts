@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsString
 } from 'class-validator';
-import { PostType } from 'src/constants/enum';
+import { PostType } from '~/constants/enum';
 
 export class CreatePostDto {
   @IsString()

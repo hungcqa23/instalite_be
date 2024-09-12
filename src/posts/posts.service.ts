@@ -1,14 +1,14 @@
 import { Model } from 'mongoose';
-import { BookMark, BookMarkDocument } from 'src/bookmarks/bookmarks.schema';
-import { PostType } from 'src/constants/enum';
-import { PostMessages } from 'src/constants/messages';
-import { FilesService } from 'src/files/files.service';
-import { Like, LikeDocument } from 'src/likes/like.schema';
-import { CreatePostDto } from 'src/posts/dto/create-post.dto';
-import { MediaType } from 'src/posts/dto/media.interface';
-import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
-import { Post, PostDocument } from 'src/posts/post.schema';
-import { User, UserDocument } from 'src/users/user.schema';
+import { BookMark, BookMarkDocument } from '~/bookmarks/bookmarks.schema';
+import { PostType } from '~/constants/enum';
+import { PostMessages } from '~/constants/messages';
+import { FilesService } from '~/files/files.service';
+import { Like, LikeDocument } from '~/likes/like.schema';
+import { CreatePostDto } from '~/posts/dto/create-post.dto';
+import { MediaType } from '~/posts/dto/media.interface';
+import { UpdatePostDto } from '~/posts/dto/update-post.dto';
+import { Post, PostDocument } from '~/posts/post.schema';
+import { User, UserDocument } from '~/users/user.schema';
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -29,7 +29,7 @@ export class PostsService {
 
   public async create(
     postBody: CreatePostDto & {
-      user_id: string;
+      userId: string;
     }
   ): Promise<PostDocument> {
     const [post] = await Promise.all([
@@ -37,12 +37,12 @@ export class PostsService {
         ...postBody,
         type_post: postBody.typePost,
         parent_post_id: postBody?.parentPostId,
-        created_at: new Date(),
+        createdAt: new Date(),
         updated_at: new Date()
       }),
       this.userModel.findOneAndUpdate(
         {
-          _id: postBody.user_id
+          _id: postBody.userId
         },
         {
           $inc: {
@@ -60,14 +60,14 @@ export class PostsService {
         _id: id
       })
       ?.populate({
-        path: 'user_id',
+        path: 'userId',
         select: 'username avatar'
       })
       ?.populate({
         path: 'parent_post_id',
-        select: 'content created_at updated_at user_id',
+        select: 'content createdAt updated_at userId',
         populate: {
-          path: 'user_id',
+          path: 'userId',
           select: 'username avatar'
         }
       });
@@ -86,11 +86,11 @@ export class PostsService {
     });
     const posts = await this.postModel
       .find({
-        user_id: user._id,
+        userId: user._id,
         type_post: PostType.NewPost
       })
       .populate({
-        path: 'user_id',
+        path: 'userId',
         select: 'username avatar'
       });
 
@@ -164,7 +164,7 @@ export class PostsService {
   public async deletePost(id: string, userId: string) {
     const post = await this.postModel.findOneAndDelete({
       _id: id,
-      user_id: userId
+      userId: userId
     });
     if (!post)
       throw new HttpException(
@@ -175,7 +175,7 @@ export class PostsService {
     await Promise.all([
       this.userModel.findOneAndUpdate(
         {
-          _id: post.user_id
+          _id: post.userId
         },
         {
           $inc: {
@@ -202,10 +202,10 @@ export class PostsService {
         type_post: PostType.NewPost
       })
       .sort({
-        created_at: -1
+        createdAt: -1
       })
       .populate({
-        path: 'user_id',
+        path: 'userId',
         select: 'username avatar'
       });
 
@@ -219,7 +219,7 @@ export class PostsService {
         type_post: PostType.Comment
       })
       .populate({
-        path: 'user_id',
+        path: 'userId',
         select: 'username avatar'
       });
     return comments;

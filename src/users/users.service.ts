@@ -1,16 +1,16 @@
 import { Cache } from 'cache-manager';
 import { Model, Types } from 'mongoose';
-import { CreateUserDto } from 'src/auth/dtos/create-user.dto';
-import { NotificationType } from 'src/constants/enum';
-import { UserMessages } from 'src/constants/messages';
-import { FilesService } from 'src/files/files.service';
+import { CreateUserDto } from '~/auth/dtos/create-user.dto';
+import { NotificationType } from '~/constants/enum';
+import { UserMessages } from '~/constants/messages';
+import { FilesService } from '~/files/files.service';
 import {
   Notification,
   NotificationDocument
-} from 'src/notifications/notification.schema';
-import { UpdateUserDto } from 'src/users/dto/update-user.dto';
-import { Follow, FollowDocument } from 'src/users/follow.schema';
-import { User, UserDocument } from 'src/users/user.schema';
+} from '~/notifications/notification.schema';
+import { UpdateUserDto } from '~/users/dto/update-user.dto';
+import { Follow, FollowDocument } from '~/users/follow.schema';
+import { User, UserDocument } from '~/users/user.schema';
 
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
@@ -18,12 +18,15 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UsersService {
+  private readonly SERVICE: string = UsersService.name;
+
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
@@ -33,7 +36,8 @@ export class UsersService {
     private readonly notificationModel: Model<NotificationDocument>,
     @Inject(CACHE_MANAGER)
     private cacheManager: Cache,
-    private readonly filesService: FilesService
+    private readonly filesService: FilesService,
+    private readonly logger: Logger
   ) {}
 
   public async create(createUserDto: CreateUserDto): Promise<UserDocument> {
@@ -41,6 +45,9 @@ export class UsersService {
     const userId = user._id.toString();
     const userJSON = JSON.stringify(user);
     await this.cacheManager.set(userId, userJSON);
+
+    // user logger
+    this.logger.log(`User created successfully - ${userId}`, this.SERVICE);
     return user;
   }
 
@@ -63,7 +70,7 @@ export class UsersService {
     const user = await this.userModel.create({
       email,
       name,
-      created_at: new Date(),
+      createdAt: new Date(),
       updated_at: new Date(),
       is_registered_via_oauth_google: true
     });
@@ -87,7 +94,7 @@ export class UsersService {
   ) {
     const user = await this.userModel.findOne({
       _id: userId,
-      refresh_token: refreshToken
+      refreshToken
     });
     if (!user) throw new UnauthorizedException();
 
@@ -100,7 +107,7 @@ export class UsersService {
         _id: userId
       },
       {
-        refresh_token: null
+        refreshToken: null
       }
     );
   }
@@ -122,8 +129,8 @@ export class UsersService {
       })
       .select('-password -refresh_token');
     const is_following = await this.followModel.findOne({
-      user_id: userId,
-      followed_user_id: user._id.toString()
+      userId: userId,
+      followedUserId: user._id.toString()
     });
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -175,8 +182,8 @@ export class UsersService {
       {
         ...updateUserDto,
         username: updateUserDto?.username?.toLowerCase(),
-        full_name: updateUserDto?.fullName,
-        updated_at: new Date()
+        fullName: updateUserDto?.fullName,
+        updatedAt: new Date()
       },
       {
         new: true
@@ -187,14 +194,14 @@ export class UsersService {
 
   public async createFollow(userId: string, followedUserId: string) {
     const follow = await this.followModel.findOne({
-      user_id: userId,
-      followed_user_id: followedUserId
+      userId: userId,
+      followedUserId
     });
     if (follow) return UserMessages.ALREADY_FOLLOWED;
 
     await this.followModel.create({
-      user_id: userId,
-      followed_user_id: new Types.ObjectId(followedUserId)
+      userId: userId,
+      followedUserId: new Types.ObjectId(followedUserId)
     });
 
     await Promise.all([
@@ -204,7 +211,7 @@ export class UsersService {
         },
         {
           $inc: {
-            following_count: 1
+            followingCount: 1
           }
         }
       ),
@@ -214,13 +221,13 @@ export class UsersService {
         },
         {
           $inc: {
-            followers_count: 1
+            followingCount: 1
           }
         }
       ),
       this.notificationModel.create({
-        user_id: userId,
-        user_receiver_id: new Types.ObjectId(followedUserId),
+        userId: userId,
+        userReceiverId: new Types.ObjectId(followedUserId),
         type: NotificationType.Follow,
         content: UserMessages.FOLLOW_SUCCESSFULLY
       })
@@ -231,8 +238,8 @@ export class UsersService {
 
   public async unfollow(userId: string, unFollowedUserId: string) {
     const unfollow = await this.followModel.findOneAndDelete({
-      user_id: userId,
-      followed_user_id: new Types.ObjectId(unFollowedUserId)
+      userId: userId,
+      followedUserId: new Types.ObjectId(unFollowedUserId)
     });
     if (!unfollow) {
       return UserMessages.ALREADY_UNFOLLOWED;
@@ -245,7 +252,7 @@ export class UsersService {
         },
         {
           $inc: {
-            following_count: -1
+            followingCount: -1
           }
         }
       ),
@@ -255,7 +262,7 @@ export class UsersService {
         },
         {
           $inc: {
-            followers_count: -1
+            followingCount: -1
           }
         }
       )
@@ -267,12 +274,12 @@ export class UsersService {
   public async getRecommendUsers(userId: string) {
     // Find list of user who I'm currently following
     const following = await this.followModel.find({
-      user_id: userId
+      userId: userId
     });
 
     const followingIds = [
-      ...following.map(follow => new Types.ObjectId(follow.followed_user_id)),
-      userId
+      ...following.map(follow => new Types.ObjectId(follow.followedUserId)),
+      new Types.ObjectId(userId)
     ];
 
     // Exclude the user who I'm currently following
@@ -294,9 +301,9 @@ export class UsersService {
     });
     const followers = await this.followModel
       .find({
-        followed_user_id: userId._id
+        followedUserId: userId._id
       })
-      .populate('user_id', 'username avatar full_name');
+      .populate('userId', 'username avatar full_name');
 
     return followers;
   }
@@ -307,9 +314,9 @@ export class UsersService {
     });
     const followings = await this.followModel
       .find({
-        user_id: userId._id
+        userId: userId._id
       })
-      .populate('followed_user_id', 'username avatar full_name');
+      .populate('followedUserId', 'username avatar full_name');
 
     return followings;
   }
@@ -319,8 +326,8 @@ export class UsersService {
       username: followedUsername
     });
     const follow = await this.followModel.findOne({
-      user_id: userId,
-      followed_user_id: followedUserId._id
+      userId: userId,
+      followedUserId: followedUserId._id
     });
     if (follow) return true;
     return false;

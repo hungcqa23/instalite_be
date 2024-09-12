@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { MyLogger } from 'src/config/logger';
+import { WinstonModule } from 'nest-winston';
+import instanceLogger from '~/logger/wiston-config.logger';
 
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,9 +11,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new MyLogger()
-  });
+  const app = await NestFactory.create(AppModule);
 
   // NOTE: Interceptors
   app.useGlobalPipes(

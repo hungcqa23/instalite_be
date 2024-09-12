@@ -1,5 +1,5 @@
-import { Like, LikeSchema } from 'src/likes/like.schema';
-import { Post, PostSchema } from 'src/posts/post.schema';
+import { Like, LikeSchema } from '~/likes/like.schema';
+import { Post, PostSchema } from '~/posts/post.schema';
 
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';

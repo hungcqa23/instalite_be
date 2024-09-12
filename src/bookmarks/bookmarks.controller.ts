@@ -1,7 +1,7 @@
-import { JwtAccessTokenGuard } from 'src/auth/jwt-access-token.guard';
-import { RequestWithUser } from 'src/auth/types/request-with-user.interface';
-import { BookmarksService } from 'src/bookmarks/bookmarks.service';
-import { CreateBookMarkDto } from 'src/bookmarks/dto/create-bookmark.dto';
+import { JwtAccessTokenGuard } from '~/auth/jwt-access-token.guard';
+import { RequestWithUser } from '~/auth/types/request-with-user.interface';
+import { BookmarksService } from '~/bookmarks/bookmarks.service';
+import { CreateBookMarkDto } from '~/bookmarks/dto/create-bookmark.dto';
 
 import {
   Body,
@@ -24,11 +24,11 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser,
     @Body()
-    creatBookMarkDto: CreateBookMarkDto
+    createBookMarkDto: CreateBookMarkDto
   ) {
     const result = await this.bookmarksService.bookmarkPost(
-      req.user._id,
-      creatBookMarkDto.postId
+      req.user._id.toString(),
+      createBookMarkDto.postId
     );
 
     return {
@@ -42,7 +42,9 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser
   ) {
-    return await this.bookmarksService.getBookmarkedPosts(req.user._id);
+    return await this.bookmarksService.getBookmarkedPosts(
+      req.user._id.toString()
+    );
   }
 
   @Delete()
@@ -50,11 +52,11 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser,
     @Body()
-    creatBookMarkDto: CreateBookMarkDto
+    createBookMarkDto: CreateBookMarkDto
   ) {
     const result = await this.bookmarksService.unBookmark(
-      req.user._id,
-      creatBookMarkDto.postId
+      req.user._id.toString(),
+      createBookMarkDto.postId
     );
 
     return {
@@ -71,7 +73,7 @@ export class BookmarksController {
     postId: string
   ) {
     const result = await this.bookmarksService.isBookmarkedPost(
-      req.user._id,
+      req.user._id.toString(),
       postId
     );
 
@@ -86,6 +88,8 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser
   ) {
-    return await this.bookmarksService.getAllBookmarkedPosts(req.user._id);
+    return await this.bookmarksService.getAllBookmarkedPosts(
+      req.user._id.toString()
+    );
   }
 }

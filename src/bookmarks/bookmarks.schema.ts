@@ -10,7 +10,7 @@ export class BookMark {
     ref: 'User',
     required: true
   })
-  user_id: Types.ObjectId;
+  userId: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
@@ -23,7 +23,7 @@ export class BookMark {
     required: true,
     default: Date.now
   })
-  created_at: Date;
+  createdAt: Date;
 
   @Prop({
     required: true,
