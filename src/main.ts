@@ -1,15 +1,20 @@
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './global/all-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  const logger = app.get<Logger>(WINSTON_MODULE_PROVIDER);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost, logger));
 
   // NOTE: Interceptors
   app.useGlobalPipes(

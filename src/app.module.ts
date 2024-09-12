@@ -1,9 +1,7 @@
 import { redisStore } from 'cache-manager-redis-store';
 import { WinstonModule } from 'nest-winston';
 import baseConfig, { validationSchema } from 'src/config/base.config';
-import instanceLogger, {
-  devLoggerConfig
-} from 'src/logger/wiston-config.logger';
+import { devLoggerConfig } from 'src/logger/wiston-config.logger';
 
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';

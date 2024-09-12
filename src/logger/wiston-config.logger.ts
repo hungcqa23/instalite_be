@@ -1,55 +1,58 @@
 import { LoggerOptions, format, transports } from 'winston';
-
-// custom log display format
-const customFormat = format.printf(({ timestamp, level, stack, message }) => {
-  return `${timestamp} - [${level.toUpperCase().padEnd(7)}] - ${stack || message}`;
-});
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 const options = {
-  file: {
-    filename: 'error.log',
-    level: 'error'
-  },
   console: {
     level: 'silly'
   }
 };
 
-//for development environment
+const commonFormat = format.combine(
+  format.timestamp(),
+  format.errors({ stack: true }),
+  format.json()
+);
+
+const fileTransport = new DailyRotateFile({
+  dirname: 'logs/%DATE%',
+  filename: 'application.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '14d'
+});
+
+const errorFileTransport = new DailyRotateFile({
+  dirname: 'logs/%DATE%',
+  filename: 'error.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxSize: '20m',
+  maxFiles: '14d',
+  level: 'error'
+});
+
 export const devLoggerConfig: LoggerOptions = {
-  format: format.combine(
-    format.timestamp(),
-    format.errors({ stack: true }),
-    customFormat
-  ),
+  format: commonFormat,
   transports: [
-    new transports.Console(options.console),
-    new transports.File(options.file),
-    new transports.File({
-      filename: 'combined.log',
-      level: 'info'
-    })
+    new transports.Console({
+      ...options.console,
+      format: format.combine(format.colorize(), format.simple())
+    }),
+    fileTransport,
+    errorFileTransport
   ]
 };
 
 export const prodLoggerConfig: LoggerOptions = {
-  format: format.combine(
-    format.timestamp(),
-    format.errors({ stack: true }),
-    format.splat(),
-    format.json()
-  ),
+  format: commonFormat,
   transports: [
     new transports.Console(options.console),
-    new transports.File(options.file),
-    new transports.File({
-      filename: 'combined.log',
-      level: 'info'
-    })
+    fileTransport,
+    errorFileTransport
   ]
 };
 
-// export log instance based on the current environment
 const loggerConfig: LoggerOptions =
   process.env.NODE_ENV === 'production' ? prodLoggerConfig : devLoggerConfig;
 
