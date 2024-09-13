@@ -9,6 +9,7 @@ import baseConfig, { validationSchema } from './base.config';
 @Module({
   imports: [
     NestConfigModule.forRoot({
+      isGlobal: true,
       load: [baseConfig],
       validationSchema
     })

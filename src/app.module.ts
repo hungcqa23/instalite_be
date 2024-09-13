@@ -1,13 +1,13 @@
 import { DatabaseModule } from '@app/common';
+import { ConfigModule } from '@app/common';
 import { redisStore } from 'cache-manager-redis-store';
 import { WinstonModule } from 'nest-winston';
-import baseConfig, { validationSchema } from 'src/config/base.config';
 import { devLoggerConfig } from 'src/logger/wiston-config.logger';
 
 import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Logger, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
@@ -23,13 +23,8 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    ConfigModule,
     DatabaseModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-      load: [baseConfig],
-      envFilePath: '.env',
-      validationSchema
-    }),
     CacheModule.registerAsync({
       isGlobal: true,
       inject: [ConfigService],
