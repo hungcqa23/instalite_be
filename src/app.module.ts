@@ -1,3 +1,4 @@
+import { DatabaseModule } from '@app/common';
 import { redisStore } from 'cache-manager-redis-store';
 import { WinstonModule } from 'nest-winston';
 import baseConfig, { validationSchema } from 'src/config/base.config';
@@ -7,7 +8,6 @@ import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
 
 import { AuthModule } from './auth/auth.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
@@ -23,6 +23,7 @@ import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [baseConfig],
@@ -44,12 +45,6 @@ import { UsersModule } from './users/users.module';
           },
           url: configService.get<string>('REDIS_URI')
         })
-      })
-    }),
-    MongooseModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('DB_URI')
       })
     }),
     BullModule.forRootAsync({
