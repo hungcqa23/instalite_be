@@ -44,15 +44,30 @@ services:
     volumes:
       - /usr/share/redis/data
 
-  # server:
-  #   build: .
-  #   container_name: server
-  #   ports:
-  #     - 8000:8000
-  #   depends_on:
-  #     - redis
-  #   networks:
-  #     - instalite
+  notifications:
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: npm run start:dev
+    env_file:
+      - path: ./apps/notifications/.env
+    container_name: notifications
+    depends_on:
+      - redis
+
+  postgres:
+    image: postgres:16.2
+    container_name: postgres-instalite
+    ports:
+      - 5432:5432
+    env_file:
+      - path: .env
+    volumes:
+      - /usr/share/postgres/data
+    networks:
+      - instalite
+
 networks:
   instalite:
     driver: bridge

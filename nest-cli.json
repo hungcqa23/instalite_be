@@ -1,13 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/instalite_be/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "plugins": [
       "@nestjs/swagger"
     ],
-    "webpack": true
+    "webpack": true,
+    "tsConfigPath": "apps/instalite_be/tsconfig.app.json"
   },
   "projects": {
     "common": {
@@ -18,6 +19,26 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "instalite_be": {
+      "type": "application",
+      "root": "apps/instalite_be",
+      "entryFile": "main",
+      "sourceRoot": "apps/instalite_be/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/instalite_be/tsconfig.app.json"
+      }
+    },
+    "notifications": {
+      "type": "application",
+      "root": "apps/notifications",
+      "entryFile": "main",
+      "sourceRoot": "apps/notifications/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notifications/tsconfig.app.json"
+      }
     }
-  }
+  },
+  "monorepo": true,
+  "root": "apps/instalite_be"
 }
