@@ -16,11 +16,11 @@ export class BookmarksService {
     const result = await this.bookMarkModel.findOneAndUpdate(
       {
         userId: userId,
-        post_id: postId
+        postId: postId
       },
       {
         userId: userId,
-        post_id: new Types.ObjectId(postId)
+        postId: new Types.ObjectId(postId)
       },
       {
         upsert: true,
@@ -34,7 +34,7 @@ export class BookmarksService {
   public async unBookmark(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOneAndDelete({
       userId: new Types.ObjectId(userId),
-      post_id: new Types.ObjectId(postId)
+      postId: new Types.ObjectId(postId)
     });
 
     return result;
@@ -45,7 +45,7 @@ export class BookmarksService {
       .find({
         userId: userId
       })
-      .populate('post_id')
+      .populate('postId')
       .populate('userId', 'username avatar');
 
     return result;
@@ -54,7 +54,7 @@ export class BookmarksService {
   public async isBookmarkedPost(userId: string, postId: string) {
     const result = await this.bookMarkModel.findOne({
       userId: userId,
-      post_id: new Types.ObjectId(postId) // postId
+      postId: new Types.ObjectId(postId) // postId
     });
     return result ? true : false;
   }
@@ -64,9 +64,9 @@ export class BookmarksService {
       .find({
         userId: userId
       })
-      .populate('post_id')
+      .populate('postId')
       .populate({
-        path: 'post_id',
+        path: 'postId',
         populate: {
           path: 'userId',
           select: 'username avatar'

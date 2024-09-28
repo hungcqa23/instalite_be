@@ -1,6 +1,6 @@
 import { PostType } from '@app/common/constants/enum';
 import { PostMessages } from '@app/common/constants/messages';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -36,8 +36,8 @@ export class PostsService {
     const [post] = await Promise.all([
       this.postModel.create({
         ...postBody,
-        type_post: postBody.typePost,
-        parent_post_id: postBody?.parentPostId,
+        typePost: postBody.typePost,
+        parentPostId: postBody?.parentPostId,
         createdAt: new Date(),
         updated_at: new Date()
       }),
@@ -47,7 +47,7 @@ export class PostsService {
         },
         {
           $inc: {
-            posts_count: 1
+            postsCount: 1
           }
         }
       )
@@ -65,8 +65,8 @@ export class PostsService {
         select: 'username avatar'
       })
       ?.populate({
-        path: 'parent_post_id',
-        select: 'content createdAt updated_at userId',
+        path: 'parentPostId',
+        select: 'content createdAt updatedAt userId',
         populate: {
           path: 'userId',
           select: 'username avatar'
@@ -88,7 +88,7 @@ export class PostsService {
     const posts = await this.postModel
       .find({
         userId: user._id,
-        type_post: PostType.NewPost
+        typePost: PostType.NewPost
       })
       .populate({
         path: 'userId',
@@ -179,27 +179,28 @@ export class PostsService {
         },
         {
           $inc: {
-            posts_count: -1
+            postsCount: -1
           }
         }
       ),
       this.likeModel.deleteMany({
-        post_id: id
+        postId: id
       }),
       this.bookMarkModel.deleteMany({
-        post_id: id
+        postId: id
       }),
       this.postModel.deleteMany({
-        parent_post_id: id
+        parentPostId: id
       })
     ]);
+
     return post;
   }
 
   public async getAllPosts() {
     const posts = await this.postModel
       .find({
-        type_post: PostType.NewPost
+        typePost: PostType.NewPost
       })
       .sort({
         createdAt: -1
@@ -213,10 +214,12 @@ export class PostsService {
   }
 
   public async getComments(id: string) {
+    const objectId = new Types.ObjectId(id);
+
     const comments = await this.postModel
       .find({
-        parent_post_id: id,
-        type_post: PostType.Comment
+        parentPostId: objectId,
+        typePost: PostType.Comment
       })
       .populate({
         path: 'userId',
@@ -237,11 +240,13 @@ export class PostsService {
         new: true
       }
     );
+
     if (!postUpdate)
       throw new HttpException(
         PostMessages.POST_NOT_FOUND,
         HttpStatus.NOT_FOUND
       );
+
     return postUpdate;
   }
 }

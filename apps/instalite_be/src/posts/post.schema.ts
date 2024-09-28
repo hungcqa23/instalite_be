@@ -25,13 +25,13 @@ export class Post {
   @Prop({
     required: true
   })
-  type_post: PostType;
+  typePost: PostType;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post'
   })
-  parent_post_id: Post;
+  parentPostId: Post;
 
   @Prop(
     raw({
@@ -60,7 +60,7 @@ export class Post {
     required: true,
     default: Date.now
   })
-  updated_at: Date;
+  updatedAt: Date;
 
   @Prop({
     required: true,

@@ -108,6 +108,7 @@ export class PostsController {
   @Get()
   async getAllPosts() {
     const posts = await this.postsService.getAllPosts();
+
     return {
       message: PostMessages.GET_ALL_POSTS_SUCCESSFULLY,
       result: posts

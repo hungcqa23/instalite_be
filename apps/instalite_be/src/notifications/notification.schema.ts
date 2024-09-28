@@ -33,7 +33,7 @@ export class Notification {
     type: Types.ObjectId,
     ref: 'Post'
   })
-  post_id: Types.ObjectId;
+  postId: Types.ObjectId;
 
   @Prop({
     default: false

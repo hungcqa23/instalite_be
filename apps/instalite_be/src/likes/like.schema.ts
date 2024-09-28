@@ -16,7 +16,7 @@ export class Like {
     type: Types.ObjectId,
     ref: 'Post'
   })
-  post_id: Types.ObjectId;
+  postId: Types.ObjectId;
 
   @Prop({
     required: true,
@@ -28,7 +28,7 @@ export class Like {
     required: true,
     default: Date.now
   })
-  updated_at: Date;
+  updatedAt: Date;
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

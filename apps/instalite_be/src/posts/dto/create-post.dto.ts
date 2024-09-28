@@ -19,7 +19,7 @@ export class CreatePostDto {
 
   @IsOptional()
   @IsMongoId({
-    message: 'Invalid parentPostId'
+    message: 'Invalid Paren Post Id'
   })
   parentPostId: string;
 }

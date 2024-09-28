@@ -17,7 +17,7 @@ export class BookMark {
     ref: 'Post',
     required: true
   })
-  post_id: Types.ObjectId;
+  postId: Types.ObjectId;
 
   @Prop({
     required: true,
@@ -29,7 +29,7 @@ export class BookMark {
     required: true,
     default: Date.now
   })
-  updated_at: Date;
+  updatedAt: Date;
 }
 
 export const BookMarkSchema = SchemaFactory.createForClass(BookMark);

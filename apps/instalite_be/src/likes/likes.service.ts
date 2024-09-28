@@ -25,12 +25,12 @@ export class LikesService {
 
     const result = await this.likeModel.findOneAndUpdate(
       {
-        userId: userId,
-        post_id: postId
+        userId,
+        postId
       },
       {
-        userId: userId,
-        post_id: postId
+        userId,
+        postId
       },
       {
         upsert: true,
@@ -50,8 +50,8 @@ export class LikesService {
       });
 
     const result = await this.likeModel.findOneAndDelete({
-      userId: userId,
-      post_id: postId
+      userId,
+      postId
     });
 
     return result;
@@ -59,8 +59,8 @@ export class LikesService {
 
   async isLikedPost(userId: string, postId: string) {
     const result = await this.likeModel.findOne({
-      userId: userId,
-      post_id: postId
+      userId,
+      postId
     });
     return result ? true : false;
   }
