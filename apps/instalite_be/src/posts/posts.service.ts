@@ -33,13 +33,27 @@ export class PostsService {
       userId: string;
     }
   ): Promise<PostDocument> {
+    const { parentPostId, ...body } = postBody;
+
+    if (parentPostId) {
+      const data = await this.postModel.findOne({
+        _id: parentPostId,
+        typePost: PostType.NewPost
+      });
+
+      if (!data)
+        throw new HttpException(
+          PostMessages.POST_PARENT_NOT_FOUND,
+          HttpStatus.NOT_FOUND
+        );
+    }
+
     const [post] = await Promise.all([
       this.postModel.create({
-        ...postBody,
-        typePost: postBody.typePost,
-        parentPostId: postBody?.parentPostId,
+        ...body,
+        parentPostId,
         createdAt: new Date(),
-        updated_at: new Date()
+        updatedAt: new Date()
       }),
       this.userModel.findOneAndUpdate(
         {

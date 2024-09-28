@@ -31,12 +31,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     );
 
     // Let the default exception handler handle the response
-    if (exception instanceof HttpException)
-      return httpAdapter.reply(
-        ctx.getResponse(),
-        exception.getResponse(),
-        httpStatus
-      );
+    if (exception instanceof HttpException) {
+      const exceptionResponse = exception.getResponse();
+      // Ensure the response is an object
+      const responseBody =
+        typeof exceptionResponse === 'string'
+          ? { message: exceptionResponse, statusCode: httpStatus }
+          : {
+              ...exceptionResponse,
+              statusCode: httpStatus
+            };
+
+      return httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
+    }
 
     // For non-HttpExceptions, return a generic error response
     const responseBody = {

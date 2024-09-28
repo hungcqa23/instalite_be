@@ -98,20 +98,20 @@ export class PostsController {
     @Param()
     { id }: GetPostDto
   ) {
-    const post = await this.postsService.getPostById(id);
+    const data = await this.postsService.getPostById(id);
     return {
       message: PostMessages.GET_POST_SUCCESSFULLY,
-      post
+      data
     };
   }
 
   @Get()
   async getAllPosts() {
-    const posts = await this.postsService.getAllPosts();
+    const data = await this.postsService.getAllPosts();
 
     return {
       message: PostMessages.GET_ALL_POSTS_SUCCESSFULLY,
-      result: posts
+      data
     };
   }
 
@@ -132,10 +132,10 @@ export class PostsController {
     @Param()
     { username }: { username: string }
   ) {
-    const posts = await this.postsService.getPostsByUsername(username);
+    const data = await this.postsService.getPostsByUsername(username);
     return {
-      message: 'Get posts by username successfully',
-      result: posts
+      message: PostMessages.GET_POST_SUCCESSFULLY,
+      data
     };
   }
 

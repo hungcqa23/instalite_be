@@ -21,5 +21,6 @@ export const PostMessages = {
   POST_NOT_FOUND: 'Post not found',
   UPLOAD_MEDIA_SUCCESSFULLY: 'Upload media successfully',
   GET_ALL_POSTS_SUCCESSFULLY: 'Get all posts successfully',
-  GET_COMMENTS_SUCCESSFULLY: 'Get comments successfully'
+  GET_COMMENTS_SUCCESSFULLY: 'Get comments successfully',
+  POST_PARENT_NOT_FOUND: 'Post parent not found'
 };
