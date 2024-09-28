@@ -1,6 +1,4 @@
-import { DatabaseModule } from '@app/common';
-import { ConfigModule } from '@app/common';
-import { LoggerModule } from '@app/common';
+import { ConfigModule, DatabaseModule, LoggerModule } from '@app/common';
 import { redisStore } from 'cache-manager-redis-store';
 
 import { BullModule } from '@nestjs/bullmq';

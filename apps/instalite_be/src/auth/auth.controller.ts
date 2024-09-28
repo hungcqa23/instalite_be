@@ -57,13 +57,14 @@ export class AuthController {
     @Res()
     res: Response
   ) {
-    const token = await this.authService.signUp(createUserDto);
+    const { token, newUser } = await this.authService.signUp(createUserDto);
     // await this.emailService.sendWelcomeEmail(createUserDto.email, 'Welcome', 'Welcome to Instalite!');
 
     this.authService.sendTokenViaCookie(res, token);
 
     res.send({
-      message: UserMessages.REGISTER_SUCCESSFULLY
+      message: UserMessages.REGISTER_SUCCESSFULLY,
+      data: newUser
     });
   }
 
@@ -95,7 +96,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAccessTokenGuard)
-  @Post('log-out')
+  @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiConsumes('application/json')
   @ApiCookieAuth('access_token')

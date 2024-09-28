@@ -113,6 +113,16 @@ export class PostsService {
   }
 
   public async uploadMedia(id: string, file?: Express.Multer.File) {
+    const post = await this.postModel.findOne({
+      _id: id
+    });
+
+    if (!post)
+      throw new HttpException(
+        PostMessages.POST_NOT_FOUND,
+        HttpStatus.NOT_FOUND
+      );
+
     if (!file) {
       return await this.postModel.findOneAndUpdate(
         {

@@ -50,7 +50,7 @@ export class AuthService {
         context: this.SERVICE_NAME
       });
 
-      return token;
+      return { token, newUser };
     } catch {
       throw new BadRequestException('Email or username already in use');
     }

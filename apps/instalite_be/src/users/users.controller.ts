@@ -53,10 +53,10 @@ export class UsersController {
     @Query('username')
     username?: string
   ) {
-    const users = await this.usersService.searchUsersByUsername(username);
+    const data = await this.usersService.searchUsersByUsername(username);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      users
+      data
     };
   }
 
@@ -117,13 +117,13 @@ export class UsersController {
     @Body()
     updateUserDto: UpdateUserDto
   ) {
-    const user = await this.usersService.updateUser(
+    const data = await this.usersService.updateUser(
       req.user._id.toString(),
       updateUserDto
     );
     return {
       message: UserMessages.UPDATE_USER_SUCCESSFULLY,
-      result: user
+      data
     };
   }
 
@@ -133,12 +133,12 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const users = await this.usersService.getRecommendUsers(
+    const data = await this.usersService.getRecommendUsers(
       req.user._id.toString()
     );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      users
+      data
     };
   }
 
@@ -150,13 +150,13 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const user = await this.usersService.getUserByUsername(
+    const data = await this.usersService.getUserByUsername(
       username,
       req.user._id.toString()
     );
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      user
+      data
     };
   }
 
@@ -167,13 +167,14 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const result = await this.usersService.checkFollow(
+    const data = await this.usersService.checkFollow(
       req.user._id.toString(),
       username
     );
+
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      result
+      data
     };
   }
 
