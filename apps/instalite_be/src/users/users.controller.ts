@@ -4,7 +4,6 @@ import { Response } from 'express';
 import {
   Body,
   Controller,
-  Delete,
   FileTypeValidator,
   Get,
   HttpException,
@@ -143,6 +142,24 @@ export class UsersController {
     };
   }
 
+  @Get(':username/follow')
+  async checkFollow(
+    @Param('username')
+    username: string,
+    @Req()
+    req: RequestWithUser
+  ) {
+    const data = await this.usersService.checkFollow(
+      req.user._id.toString(),
+      username
+    );
+
+    return {
+      message: UserMessages.CHECK_FOLLOW_SUCCESSFULLY,
+      data
+    };
+  }
+
   @Get(':username')
   @UseGuards(JwtAccessTokenGuard)
   async getUserByUsername(
@@ -161,33 +178,16 @@ export class UsersController {
     };
   }
 
-  @Get(':username/follow')
-  async checkFollow(
-    @Param('username')
-    username: string,
-    @Req()
-    req: RequestWithUser
-  ) {
-    const data = await this.usersService.checkFollow(
-      req.user._id.toString(),
-      username
-    );
-
-    return {
-      message: UserMessages.GET_USER_SUCCESSFULLY,
-      data
-    };
-  }
-
   @Get(':username/followers')
   async getAllFollowers(
     @Param('username')
     username: string
   ) {
-    const followers = await this.usersService.getAllFollowers(username);
+    const data = await this.usersService.getAllFollowers(username);
+
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      data: followers
+      data
     };
   }
 
@@ -196,10 +196,11 @@ export class UsersController {
     @Param('username')
     username: string
   ) {
-    const followers = await this.usersService.getAllFollowings(username);
+    const data = await this.usersService.getAllFollowings(username);
+
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      data: followers
+      data
     };
   }
 
@@ -213,17 +214,17 @@ export class UsersController {
     @Res()
     res: Response
   ) {
-    const result = await this.usersService.createFollow(
+    const message = await this.usersService.createFollow(
       req.user._id.toString(),
       createFollowDto.followedUserId
     );
 
     return res.status(HttpStatus.CREATED).json({
-      message: result
+      message
     });
   }
 
-  @Delete('follow')
+  @Post('unfollow')
   @UseGuards(JwtAccessTokenGuard)
   async unfollow(
     @Req()
@@ -238,7 +239,7 @@ export class UsersController {
       unfollowDto.followedUserId
     );
 
-    return res.status(204).json({
+    return res.status(HttpStatus.OK).json({
       message: result
     });
   }

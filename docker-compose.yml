@@ -44,17 +44,17 @@ services:
     volumes:
       - /usr/share/redis/data
 
-  notifications:
-    build:
-      context: .
-      dockerfile: ./apps/notifications/Dockerfile
-      target: development
-    command: npm run start:dev
-    env_file:
-      - path: ./apps/notifications/.env
-    container_name: notifications
-    depends_on:
-      - redis
+  # notifications:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/notifications/Dockerfile
+  #     target: development
+  #   command: npm run start:dev
+  #   env_file:
+  #     - path: ./apps/notifications/.env
+  #   container_name: notifications
+  #   depends_on:
+  #     - redis
 
   postgres:
     image: postgres:16.2

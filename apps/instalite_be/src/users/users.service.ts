@@ -125,6 +125,9 @@ export class UsersService {
         username
       })
       .select('-password -refreshToken');
+
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
     const isFollowing = (await this.followModel.findOne({
       userId: userId,
       followedUserId: user._id.toString()
@@ -132,7 +135,6 @@ export class UsersService {
       ? true
       : false;
 
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return {
       user,
       isFollowing
@@ -193,15 +195,18 @@ export class UsersService {
 
   public async createFollow(userId: string, followedUserId: string) {
     const follow = await this.followModel.findOne({
-      userId: userId,
-      followedUserId
+      userId: new Types.ObjectId(userId),
+      followedUserId: new Types.ObjectId(followedUserId)
     });
     if (follow) return UserMessages.ALREADY_FOLLOWED;
 
     await this.followModel.create({
-      userId: userId,
+      userId: new Types.ObjectId(userId),
       followedUserId: new Types.ObjectId(followedUserId)
     });
+
+    console.log('userId', userId);
+    console.log('followedUserId', followedUserId);
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
@@ -220,12 +225,12 @@ export class UsersService {
         },
         {
           $inc: {
-            followingCount: 1
+            followersCount: 1
           }
         }
       ),
       this.notificationModel.create({
-        userId: userId,
+        userId,
         userReceiverId: new Types.ObjectId(followedUserId),
         type: NotificationType.Follow,
         content: UserMessages.FOLLOW_SUCCESSFULLY
@@ -237,12 +242,10 @@ export class UsersService {
 
   public async unfollow(userId: string, unFollowedUserId: string) {
     const unfollow = await this.followModel.findOneAndDelete({
-      userId: userId,
+      userId: new Types.ObjectId(userId),
       followedUserId: new Types.ObjectId(unFollowedUserId)
     });
-    if (!unfollow) {
-      return UserMessages.ALREADY_UNFOLLOWED;
-    }
+    if (!unfollow) return UserMessages.ALREADY_UNFOLLOWED;
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
@@ -261,7 +264,7 @@ export class UsersService {
         },
         {
           $inc: {
-            followingCount: -1
+            followersCount: -1
           }
         }
       )
@@ -302,7 +305,7 @@ export class UsersService {
       .find({
         followedUserId: userId._id
       })
-      .populate('userId', 'username avatar fullName');
+      .populate('followedUserId', 'username avatar fullName');
 
     return followers;
   }
@@ -321,12 +324,14 @@ export class UsersService {
   }
 
   public async checkFollow(userId: string, followedUsername: string) {
-    const followedUserId = await this.userModel.findOne({
+    const followedUser = await this.userModel.findOne({
       username: followedUsername
     });
+    if (!followedUser) return false;
+
     const follow = await this.followModel.findOne({
-      userId,
-      followedUserId: followedUserId._id
+      userId: new Types.ObjectId(userId),
+      followedUserId: followedUser._id
     });
     if (follow) return true;
     return false;

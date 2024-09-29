@@ -10,7 +10,8 @@ export const UserMessages = {
   UNFOLLOW_SUCCESSFULLY: 'Unfollow successfully',
   ALREADY_FOLLOWED: 'User has already followed',
   ALREADY_UNFOLLOWED: 'User has already unfollowed',
-  UPDATE_USER_SUCCESSFULLY: 'Update user successfully'
+  UPDATE_USER_SUCCESSFULLY: 'Update user successfully',
+  CHECK_FOLLOW_SUCCESSFULLY: 'Check follow successfully'
 };
 
 export const PostMessages = {
