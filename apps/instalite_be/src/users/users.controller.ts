@@ -83,14 +83,14 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const user = await this.usersService.addAvatar(
+    const data = await this.usersService.addAvatar(
       req.user._id.toString(),
       file
     );
 
     return {
       message: UserMessages.UPLOAD_AVATAR_SUCCESSFULLY,
-      result: user
+      data
     };
   }
 
@@ -100,12 +100,13 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const user = await this.usersService.getUserById(req.user._id.toString());
-    if (!user)
+    const data = await this.usersService.getUserById(req.user._id.toString());
+
+    if (!data)
       throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
-      user
+      data
     };
   }
 

@@ -68,8 +68,8 @@ export class UsersService {
       email,
       name,
       createdAt: new Date(),
-      updated_at: new Date(),
-      is_registered_via_oauth_google: true
+      updatedAt: new Date(),
+      isRegisteredViaOauthGoogle: true
     });
     return user;
   }
@@ -80,7 +80,7 @@ export class UsersService {
         _id: userId
       },
       {
-        refresh_token: refreshToken
+        refreshToken
       }
     );
   }
@@ -124,16 +124,18 @@ export class UsersService {
       .findOne({
         username
       })
-      .select('-password -refresh_token');
-    const is_following = await this.followModel.findOne({
+      .select('-password -refreshToken');
+    const isFollowing = (await this.followModel.findOne({
       userId: userId,
       followedUserId: user._id.toString()
-    });
+    }))
+      ? true
+      : false;
 
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return {
       user,
-      is_following: is_following ? true : false
+      isFollowing
     };
   }
 
@@ -300,7 +302,7 @@ export class UsersService {
       .find({
         followedUserId: userId._id
       })
-      .populate('userId', 'username avatar full_name');
+      .populate('userId', 'username avatar fullName');
 
     return followers;
   }
@@ -313,7 +315,7 @@ export class UsersService {
       .find({
         userId: userId._id
       })
-      .populate('followedUserId', 'username avatar full_name');
+      .populate('followedUserId', 'username avatar fullName');
 
     return followings;
   }
@@ -323,7 +325,7 @@ export class UsersService {
       username: followedUsername
     });
     const follow = await this.followModel.findOne({
-      userId: userId,
+      userId,
       followedUserId: followedUserId._id
     });
     if (follow) return true;
