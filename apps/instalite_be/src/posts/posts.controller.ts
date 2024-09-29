@@ -40,14 +40,14 @@ export class PostsController {
     @Req()
     req: RequestWithUser
   ) {
-    const post = await this.postsService.create({
+    const data = await this.postsService.create({
       ...body,
       userId: req.user.id
     });
 
     return {
       message: PostMessages.CREATE_POST_SUCCESSFULLY,
-      post
+      data
     };
   }
 
@@ -160,10 +160,10 @@ export class PostsController {
     @Body()
     body: UpdatePostDto
   ) {
-    const post = await this.postsService.updatePost(id, body);
+    const data = await this.postsService.updatePost(id, body);
     return {
       message: PostMessages.UPDATE_POST_SUCCESSFULLY,
-      post
+      data
     };
   }
 }
