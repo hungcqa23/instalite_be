@@ -63,9 +63,9 @@ export class PostsController {
     @UploadedFile()
     file: Express.Multer.File
   ) {
-    const url_media = await this.postsService.uploadVideoHLS(file, id);
+    const message = await this.postsService.uploadVideoHLS(file, id);
     return {
-      message: url_media
+      message
     };
   }
 

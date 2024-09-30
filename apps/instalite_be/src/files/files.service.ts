@@ -1,3 +1,5 @@
+#!/usr/bin/env -S npx ts-node
+import slash from '@app/common/utils/slash';
 import { S3 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { GenerativeModel, GoogleGenerativeAI } from '@google/generative-ai';
@@ -5,6 +7,7 @@ import { Queue } from 'bullmq';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
+// import { $ } from 'zx';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -47,7 +50,6 @@ export class FilesService {
   }
 
   private async checkVideoHasAudio(filePath: string) {
-    const slash = (await import('slash')).default;
     const { $ } = await import('zx');
     const { stdout } = await $`ffprobe ${[
       '-v',
@@ -64,8 +66,10 @@ export class FilesService {
   }
 
   private async getBitrate(filePath: string) {
+    // console.log('filePath: ' + filePath);
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
+    console.log(slash(filePath));
+
     const { stdout } = await $`ffprobe ${[
       '-v',
       'error',
@@ -82,7 +86,6 @@ export class FilesService {
 
   private async getResolution(filePath: string) {
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
     const { stdout } = await $`ffprobe ${[
       '-v',
       'error',
@@ -123,7 +126,6 @@ export class FilesService {
     resolution
   }: EncodeByResolution) {
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
 
     const args = [
       '-y',
@@ -187,7 +189,6 @@ export class FilesService {
     resolution
   }: EncodeByResolution) {
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
 
     const args = [
       '-y',
@@ -258,7 +259,6 @@ export class FilesService {
     resolution
   }: EncodeByResolution) {
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
 
     const args = [
       '-y',
@@ -350,7 +350,6 @@ export class FilesService {
     resolution
   }: EncodeByResolution) {
     const { $ } = await import('zx');
-    const slash = (await import('slash')).default;
 
     const args = [
       '-y',
@@ -453,6 +452,7 @@ export class FilesService {
       this.getBitrate(inputPath),
       this.getResolution(inputPath)
     ]);
+    console.log(bitrate, resolution);
     const parentFolder = path.join(inputPath, '..');
 
     const outputSegmentPath = path.join(parentFolder, 'v%v/fileSequence%d.ts');
