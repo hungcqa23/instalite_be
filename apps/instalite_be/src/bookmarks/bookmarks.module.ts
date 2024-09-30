@@ -1,4 +1,7 @@
-import { Module } from '@nestjs/common';
+import { PostsModule } from 'apps/instalite_be/src/posts/posts.module';
+import { UsersModule } from 'apps/instalite_be/src/users/users.module';
+
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { BookMark, BookMarkSchema } from '../bookmarks/bookmarks.schema';
@@ -13,6 +16,8 @@ import { BookmarksService } from './bookmarks.service';
         schema: BookMarkSchema
       }
     ])
+    // UsersModule
+    // forwardRef(() => PostsModule)
   ],
   controllers: [BookmarksController],
   providers: [BookmarksService],

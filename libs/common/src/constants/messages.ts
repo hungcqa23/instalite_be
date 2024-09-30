@@ -25,3 +25,11 @@ export const PostMessages = {
   GET_COMMENTS_SUCCESSFULLY: 'Get comments successfully',
   POST_PARENT_NOT_FOUND: 'Post parent not found'
 };
+
+export const BookmarkMessages = {
+  CREATE_BOOKMARK_SUCCESSFULLY: 'Create bookmark successfully',
+  DELETE_BOOKMARK_SUCCESSFULLY: 'Delete bookmark successfully',
+  GET_BOOKMARK_SUCCESSFULLY: 'Get bookmark successfully',
+  BOOKMARK_NOT_FOUND: 'Bookmark not found',
+  GET_ALL_BOOKMARKS_SUCCESSFULLY: 'Get all bookmarks successfully'
+};

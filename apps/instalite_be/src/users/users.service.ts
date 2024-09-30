@@ -77,7 +77,7 @@ export class UsersService {
   public async updateRefreshToken(userId: string, refreshToken: string) {
     await this.userModel.findOneAndUpdate(
       {
-        _id: userId
+        _id: new Types.ObjectId(userId)
       },
       {
         refreshToken
@@ -90,7 +90,7 @@ export class UsersService {
     userId: string
   ) {
     const user = await this.userModel.findOne({
-      _id: userId,
+      _id: new Types.ObjectId(userId),
       refreshToken
     });
     if (!user) throw new UnauthorizedException();
@@ -112,10 +112,12 @@ export class UsersService {
   public async getUserById(id: string): Promise<UserDocument> {
     const user = this.userModel
       .findOne({
-        _id: id
+        _id: new Types.ObjectId(id)
       })
       .select('-password');
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    if (!user)
+      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return user;
   }
 
@@ -126,7 +128,8 @@ export class UsersService {
       })
       .select('-password -refreshToken');
 
-    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user)
+      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
 
     const isFollowing = (await this.followModel.findOne({
       userId: userId,

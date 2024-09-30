@@ -1,3 +1,5 @@
+import { BookmarkMessages } from '@app/common/constants/messages';
+
 import {
   Body,
   Controller,
@@ -26,14 +28,14 @@ export class BookmarksController {
     @Body()
     createBookMarkDto: CreateBookMarkDto
   ) {
-    const result = await this.bookmarksService.bookmarkPost(
+    const data = await this.bookmarksService.bookmarkPost(
       req.user._id.toString(),
       createBookMarkDto.postId
     );
 
     return {
-      message: 'Created bookmark',
-      result
+      message: BookmarkMessages.CREATE_BOOKMARK_SUCCESSFULLY,
+      data
     };
   }
 
@@ -54,14 +56,14 @@ export class BookmarksController {
     @Body()
     createBookMarkDto: CreateBookMarkDto
   ) {
-    const result = await this.bookmarksService.unBookmark(
+    const data = await this.bookmarksService.unBookmark(
       req.user._id.toString(),
       createBookMarkDto.postId
     );
 
     return {
       message: 'Deleted bookmark',
-      result
+      data
     };
   }
 
@@ -72,14 +74,14 @@ export class BookmarksController {
     @Param('postId')
     postId: string
   ) {
-    const result = await this.bookmarksService.isBookmarkedPost(
+    const data = await this.bookmarksService.isBookmarkedPost(
       req.user._id.toString(),
       postId
     );
 
     return {
       message: 'Check if post is bookmarked',
-      result
+      data
     };
   }
 
@@ -88,8 +90,12 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser
   ) {
-    return await this.bookmarksService.getAllBookmarkedPosts(
+    const data = await this.bookmarksService.getAllBookmarkedPosts(
       req.user._id.toString()
     );
+    return {
+      message: 'Get all bookmarked posts',
+      data
+    };
   }
 }

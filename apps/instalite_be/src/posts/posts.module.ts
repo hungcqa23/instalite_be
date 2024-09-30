@@ -21,6 +21,7 @@ import { PostsService } from './posts.service';
     UsersModule,
     LikesModule,
     BookmarksModule
+    // forwardRef(() => BookmarksModule
   ],
   controllers: [PostsController],
   providers: [PostsService],
