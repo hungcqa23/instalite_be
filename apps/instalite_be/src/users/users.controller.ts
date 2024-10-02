@@ -82,10 +82,7 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const data = await this.usersService.addAvatar(
-      req.user._id.toString(),
-      file
-    );
+    const data = await this.usersService.addAvatar(req.user._id.toString(), file);
 
     return {
       message: UserMessages.UPLOAD_AVATAR_SUCCESSFULLY,
@@ -101,8 +98,7 @@ export class UsersController {
   ) {
     const data = await this.usersService.getUserById(req.user._id.toString());
 
-    if (!data)
-      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!data) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       data
@@ -117,10 +113,7 @@ export class UsersController {
     @Body()
     updateUserDto: UpdateUserDto
   ) {
-    const data = await this.usersService.updateUser(
-      req.user._id.toString(),
-      updateUserDto
-    );
+    const data = await this.usersService.updateUser(req.user._id.toString(), updateUserDto);
     return {
       message: UserMessages.UPDATE_USER_SUCCESSFULLY,
       data
@@ -133,9 +126,7 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const data = await this.usersService.getRecommendUsers(
-      req.user._id.toString()
-    );
+    const data = await this.usersService.getRecommendUsers(req.user._id.toString());
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       data
@@ -149,10 +140,7 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const data = await this.usersService.checkFollow(
-      req.user._id.toString(),
-      username
-    );
+    const data = await this.usersService.checkFollow(req.user._id.toString(), username);
 
     return {
       message: UserMessages.CHECK_FOLLOW_SUCCESSFULLY,
@@ -168,10 +156,7 @@ export class UsersController {
     @Req()
     req: RequestWithUser
   ) {
-    const data = await this.usersService.getUserByUsername(
-      username,
-      req.user._id.toString()
-    );
+    const data = await this.usersService.getUserByUsername(username);
     return {
       message: UserMessages.GET_USER_SUCCESSFULLY,
       data

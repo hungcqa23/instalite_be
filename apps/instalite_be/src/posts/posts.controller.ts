@@ -1,4 +1,5 @@
 import { PostMessages } from '@app/common/constants/messages';
+import { PageOptionsDto } from '@app/common/pagination/page-options.dto';
 
 import {
   Body,
@@ -13,6 +14,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -32,6 +34,16 @@ import { PostsService } from '../posts/posts.service';
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
+
+  @Get()
+  async getAllPosts(@Query() pageOptionsDto: PageOptionsDto) {
+    const data = await this.postsService.getAllPosts(pageOptionsDto);
+
+    return {
+      message: PostMessages.GET_ALL_POSTS_SUCCESSFULLY,
+      data
+    };
+  }
 
   @Post()
   async createNewPost(
@@ -105,25 +117,16 @@ export class PostsController {
     };
   }
 
-  @Get()
-  async getAllPosts() {
-    const data = await this.postsService.getAllPosts();
-
-    return {
-      message: PostMessages.GET_ALL_POSTS_SUCCESSFULLY,
-      data
-    };
-  }
-
   @Get(':id/comments')
   async getComments(
     @Param()
     { id }: GetPostDto
   ) {
-    const comments = await this.postsService.getComments(id);
+    const data = await this.postsService.getComments(id);
+
     return {
       message: PostMessages.GET_COMMENTS_SUCCESSFULLY,
-      result: comments
+      data
     };
   }
 

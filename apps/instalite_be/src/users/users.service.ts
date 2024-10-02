@@ -15,10 +15,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto } from '../auth/dtos/create-user.dto';
 import { FilesService } from '../files/files.service';
-import {
-  Notification,
-  NotificationDocument
-} from '../notifications/notification.schema';
+import { Notification, NotificationDocument } from '../notifications/notification.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Follow, FollowDocument } from './follow.schema';
 import { User, UserDocument } from './user.schema';
@@ -60,10 +57,7 @@ export class UsersService {
     });
   }
 
-  public async signUpWithGoogle(
-    email: string,
-    name: string
-  ): Promise<UserDocument> {
+  public async signUpWithGoogle(email: string, name: string): Promise<UserDocument> {
     const user = await this.userModel.create({
       email,
       name,
@@ -85,10 +79,7 @@ export class UsersService {
     );
   }
 
-  public async getUserIfRefreshTokenMatches(
-    refreshToken: string,
-    userId: string
-  ) {
+  public async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
     const user = await this.userModel.findOne({
       _id: new Types.ObjectId(userId),
       refreshToken
@@ -116,37 +107,28 @@ export class UsersService {
       })
       .select('-password');
 
-    if (!user)
-      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!user) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return user;
   }
 
-  public async getUserByUsername(username: string, userId: string) {
+  public async getUserByUsername(username: string) {
+    const data = await this.cacheManager.get('profile:' + username);
+    if (data) return data;
+
     const user = await this.userModel
       .findOne({
         username
       })
       .select('-password -refreshToken');
 
-    if (!user)
-      throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!user) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    const isFollowing = (await this.followModel.findOne({
-      userId: userId,
-      followedUserId: user._id.toString()
-    }))
-      ? true
-      : false;
+    await this.cacheManager.set('profile:' + username, user);
 
-    return {
-      user,
-      isFollowing
-    };
+    return user;
   }
 
-  public async searchUsersByUsername(
-    username?: string
-  ): Promise<UserDocument[]> {
+  public async searchUsersByUsername(username?: string): Promise<UserDocument[]> {
     // I want to search users array by username
     if (!username) return [];
     // i for case insensitive
@@ -193,6 +175,8 @@ export class UsersService {
         new: true
       }
     );
+    await this.cacheManager.del(`profile:${user.username}`);
+    console.log('Delete profile successfully!');
     return user;
   }
 

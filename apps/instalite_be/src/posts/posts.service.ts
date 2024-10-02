@@ -1,5 +1,8 @@
 import { PostType } from '@app/common/constants/enum';
 import { PostMessages } from '@app/common/constants/messages';
+import { PageMetaDto } from '@app/common/pagination/page-meta.dto';
+import { PageOptionsDto } from '@app/common/pagination/page-options.dto';
+import { PageDto } from '@app/common/pagination/page.dto';
 import { Model, Types } from 'mongoose';
 
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
@@ -41,11 +44,7 @@ export class PostsService {
         typePost: PostType.NewPost
       });
 
-      if (!data)
-        throw new HttpException(
-          PostMessages.POST_PARENT_NOT_FOUND,
-          HttpStatus.NOT_FOUND
-        );
+      if (!data) throw new HttpException(PostMessages.POST_PARENT_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     const [post] = await Promise.all([
@@ -87,11 +86,7 @@ export class PostsService {
         }
       });
 
-    if (!post)
-      throw new HttpException(
-        PostMessages.POST_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
+    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     return post;
   }
 
@@ -117,11 +112,7 @@ export class PostsService {
       _id: id
     });
 
-    if (!post)
-      throw new HttpException(
-        PostMessages.POST_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
+    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     if (!file) {
       return await this.postModel.findOneAndUpdate(
@@ -190,11 +181,7 @@ export class PostsService {
       _id: id,
       userId: userId
     });
-    if (!post)
-      throw new HttpException(
-        PostMessages.POST_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
+    if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     await Promise.all([
       this.userModel.findOneAndUpdate(
@@ -221,7 +208,7 @@ export class PostsService {
     return post;
   }
 
-  public async getAllPosts() {
+  public async getAllPosts(pageOptionsDto: PageOptionsDto) {
     const posts = await this.postModel
       .find({
         typePost: PostType.NewPost
@@ -232,23 +219,30 @@ export class PostsService {
       .populate({
         path: 'userId',
         select: 'username avatar'
-      });
+      })
+      .skip(pageOptionsDto.skip)
+      .limit(pageOptionsDto.take);
 
-    return posts;
+    const itemCount = await this.postModel.countDocuments({
+      typePost: PostType.NewPost
+    });
+
+    const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+
+    return new PageDto(posts, pageMetaDto);
   }
 
   public async getComments(id: string) {
-    const objectId = new Types.ObjectId(id);
-
     const comments = await this.postModel
       .find({
-        parentPostId: objectId,
+        parentPostId: new Types.ObjectId(id),
         typePost: PostType.Comment
       })
       .populate({
         path: 'userId',
         select: 'username avatar'
       });
+
     return comments;
   }
 
@@ -265,11 +259,7 @@ export class PostsService {
       }
     );
 
-    if (!postUpdate)
-      throw new HttpException(
-        PostMessages.POST_NOT_FOUND,
-        HttpStatus.NOT_FOUND
-      );
+    if (!postUpdate) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     return postUpdate;
   }
