@@ -102,6 +102,9 @@ export class PostsService {
       .populate({
         path: 'userId',
         select: 'username avatar'
+      })
+      .sort({
+        createdAt: -1
       });
 
     return posts;

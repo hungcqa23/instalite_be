@@ -30,6 +30,17 @@ services:
   #   - es01
   # networks:
   #   - instalite
+  instalite_be:
+    container_name: instalite
+    build:
+      context: .
+      dockerfile: ./apps/instalite_be/Dockerfile
+      target: development
+    command: npm run start:dev instalite_be
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/user/src/app
 
   redis:
     image: redis:7.2.4
@@ -43,6 +54,8 @@ services:
       - instalite
     volumes:
       - /usr/share/redis/data
+
+  
 
   # notifications:
   #   build:

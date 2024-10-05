@@ -47,10 +47,7 @@ export class EmailService {
         }
       },
       Source: fromAddress,
-      ReplyToAddresses:
-        replyToAddresses instanceof Array
-          ? replyToAddresses
-          : [replyToAddresses]
+      ReplyToAddresses: replyToAddresses instanceof Array ? replyToAddresses : [replyToAddresses]
     });
   }
 

@@ -3,12 +3,7 @@ import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -35,14 +30,8 @@ export class AuthService {
         ...createUserDto,
         password: hashedPassword
       });
-      const token = await this.signRefreshAndAccessTokens(
-        newUser._id.toString(),
-        newUser.username
-      );
-      await this.usersService.updateRefreshToken(
-        newUser._id.toString(),
-        token.refreshToken
-      );
+      const token = await this.signRefreshAndAccessTokens(newUser._id.toString(), newUser.username);
+      await this.usersService.updateRefreshToken(newUser._id.toString(), token.refreshToken);
 
       this.logger.log({
         level: 'info',
@@ -74,9 +63,7 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>(
-            'JWT_ACCESS_TOKEN_EXPIRATION_TIME'
-          )
+          expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME')
         }
       ),
       this.jwtService.signAsync(
@@ -86,9 +73,7 @@ export class AuthService {
         },
         {
           secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-          expiresIn: this.configService.get<string>(
-            'JWT_REFRESH_TOKEN_EXPIRATION_TIME'
-          )
+          expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME')
         }
       )
     ]);
