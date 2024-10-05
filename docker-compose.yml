@@ -56,6 +56,18 @@ services:
     volumes:
       - /usr/share/redis/data
 
+  notifications:
+    container_name: notifications
+    build:
+      context: .
+      dockerfile: ./apps/notifications/Dockerfile
+      target: development
+    command: npm run start:dev notifications
+    env_file:
+      - ./apps/notifications/.env
+    volumes:
+      - .:/usr/src/app
+
   instalite_be:
     container_name: instalite
     build:
@@ -73,18 +85,6 @@ services:
       - instalite
     volumes:
       - .:/usr/src/app
-
-  # notifications:
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/notifications/Dockerfile
-  #     target: development
-  #   command: npm run start:dev
-  #   env_file:
-  #     - path: ./apps/notifications/.env
-  #   container_name: notifications
-  #   depends_on:
-  #     - redis
 
 networks:
   instalite:

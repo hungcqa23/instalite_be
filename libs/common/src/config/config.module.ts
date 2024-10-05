@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-  ConfigService,
-  ConfigModule as NestConfigModule
-} from '@nestjs/config';
+import { ConfigService, ConfigModule as NestConfigModule } from '@nestjs/config';
 
 import baseConfig, { validationSchema } from './base.config';
 

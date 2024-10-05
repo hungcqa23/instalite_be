@@ -11,7 +11,7 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: configService.get('NOTIFICATIONS_TCP_PORT')
+      port: configService.get('PORT')
     }
   });
   await app.startAllMicroservices();
