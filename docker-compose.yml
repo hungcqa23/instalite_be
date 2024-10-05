@@ -30,17 +30,18 @@ services:
   #   - es01
   # networks:
   #   - instalite
-  instalite_be:
-    container_name: instalite
-    build:
-      context: .
-      dockerfile: ./apps/instalite_be/Dockerfile
-      target: development
-    command: npm run start:dev instalite_be
+
+  postgres:
+    image: postgres:16.2
+    container_name: postgres-instalite
     ports:
-      - 8000:8000
+      - 5432:5432
+    env_file:
+      - path: .env
     volumes:
-      - .:/user/src/app
+      - /usr/share/postgres/data
+    networks:
+      - instalite
 
   redis:
     image: redis:7.2.4
@@ -55,7 +56,23 @@ services:
     volumes:
       - /usr/share/redis/data
 
-  
+  instalite_be:
+    container_name: instalite
+    build:
+      context: .
+      dockerfile: ./apps/instalite_be/Dockerfile
+      target: development
+    command: npm run start:dev instalite_be
+    env_file:
+      - ./apps/instalite_be/.env
+    depends_on:
+      - redis
+    ports:
+      - 8000:8000
+    networks:
+      - instalite
+    volumes:
+      - .:/usr/src/app
 
   # notifications:
   #   build:
@@ -68,18 +85,6 @@ services:
   #   container_name: notifications
   #   depends_on:
   #     - redis
-
-  postgres:
-    image: postgres:16.2
-    container_name: postgres-instalite
-    ports:
-      - 5432:5432
-    env_file:
-      - path: .env
-    volumes:
-      - /usr/share/postgres/data
-    networks:
-      - instalite
 
 networks:
   instalite:

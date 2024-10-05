@@ -1,5 +1,5 @@
 import { UserMessages } from '@app/common/constants/messages';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 

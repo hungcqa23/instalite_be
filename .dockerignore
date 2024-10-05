@@ -1,7 +1,6 @@
 # Exclude locally installed dependencies
 node_modules/
 dist/
-node_modules
-/node_modules
+
 # Exclude "build-time" ignore files.
 .dockerignore
