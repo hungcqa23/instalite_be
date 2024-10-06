@@ -6,13 +6,17 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json for dependency installation
 COPY package.json ./
 COPY package-lock.json ./
-COPY tsconfig.json ./
-COPY nest-cli.json ./
+COPY tsconfig.json tsconfig.json
+COPY nest-cli.json nest-cli.json
 
-COPY . .
+# Install npm dependencies
+RUN npm install
+
+COPY apps/instalite_be apps/instalite_be
+COPY libs libs
 
 # Build the app
-RUN npm run build
+RUN npm run build instalite_be
 
 # Production stage
 FROM node:20-alpine AS production
@@ -22,16 +26,12 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-# Install build tools for native modules in production environment
-RUN apk add --no-cache python3 make g++
-
 # Copy package.json and package-lock.json for production installation
 COPY package.json ./ 
 COPY package-lock.json ./ 
 
 # Install npm dependencies in production environment
-# Rebuild bcrypt from source to ensure compatibility with Alpine
-RUN npm install bcrypt --build-from-source && npm install --omit=dev --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts
 
 COPY --from=development /usr/src/app/dist ./dist
 

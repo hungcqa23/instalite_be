@@ -46,11 +46,7 @@ export const devLoggerConfig: LoggerOptions = {
 
 export const prodLoggerConfig: LoggerOptions = {
   format: commonFormat,
-  transports: [
-    new transports.Console(options.console),
-    fileTransport,
-    errorFileTransport
-  ]
+  transports: [new transports.Console(options.console), fileTransport, errorFileTransport]
 };
 
 const loggerConfig: LoggerOptions =

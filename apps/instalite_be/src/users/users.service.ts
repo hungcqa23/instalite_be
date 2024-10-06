@@ -192,9 +192,6 @@ export class UsersService {
       followedUserId: new Types.ObjectId(followedUserId)
     });
 
-    console.log('userId', userId);
-    console.log('followedUserId', followedUserId);
-
     await Promise.all([
       this.userModel.findOneAndUpdate(
         {

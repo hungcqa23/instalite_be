@@ -16,13 +16,7 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiCookieAuth,
-  ApiSecurity,
-  ApiTags
-} from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiCookieAuth, ApiSecurity, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from '../auth/auth.service';
 import { CreateUserDto } from '../auth/dtos/create-user.dto';
