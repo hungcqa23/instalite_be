@@ -3,19 +3,16 @@ FROM node:20-alpine AS development
 
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json for dependency installation
 COPY package.json ./
 COPY package-lock.json ./
 COPY tsconfig.json tsconfig.json
 COPY nest-cli.json nest-cli.json
 
-# Install npm dependencies
 RUN npm install
 
 COPY apps/instalite_be apps/instalite_be
 COPY libs libs
 
-# Build the app
 RUN npm run build instalite_be
 
 # Production stage
@@ -26,7 +23,6 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json for production installation
 COPY package.json ./ 
 COPY package-lock.json ./ 
 

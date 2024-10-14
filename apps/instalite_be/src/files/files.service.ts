@@ -37,9 +37,7 @@ export class FilesService {
         secretAccessKey: configService.get<string>('AWS_SECRET_ACCESS_KEY')
       }
     });
-    this.googleGenerativeAI = new GoogleGenerativeAI(
-      configService.get<string>('GEMINI_API_KEY')
-    );
+    this.googleGenerativeAI = new GoogleGenerativeAI(configService.get<string>('GEMINI_API_KEY'));
 
     this.model = this.googleGenerativeAI.getGenerativeModel({
       model: 'gemini-1.5-flash'
@@ -457,16 +455,9 @@ export class FilesService {
 
     const outputSegmentPath = path.join(parentFolder, 'v%v/fileSequence%d.ts');
     const outputPath = path.join(parentFolder, 'v%v/prog_index.m3u8');
-    const bitrate720 =
-      bitrate > this.MAXIMUM_BITRATE_720P ? this.MAXIMUM_BITRATE_720P : bitrate;
-    const bitrate1080 =
-      bitrate > this.MAXIMUM_BITRATE_1080P
-        ? this.MAXIMUM_BITRATE_1080P
-        : bitrate;
-    const bitrate1440 =
-      bitrate > this.MAXIMUM_BITRATE_1440P
-        ? this.MAXIMUM_BITRATE_1440P
-        : bitrate;
+    const bitrate720 = bitrate > this.MAXIMUM_BITRATE_720P ? this.MAXIMUM_BITRATE_720P : bitrate;
+    const bitrate1080 = bitrate > this.MAXIMUM_BITRATE_1080P ? this.MAXIMUM_BITRATE_1080P : bitrate;
+    const bitrate1440 = bitrate > this.MAXIMUM_BITRATE_1440P ? this.MAXIMUM_BITRATE_1440P : bitrate;
     const isHasAudio = await this.checkVideoHasAudio(inputPath);
 
     if (resolution.height > 1440)

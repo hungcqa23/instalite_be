@@ -3,10 +3,7 @@ import { Model, Types } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
-import {
-  Notification,
-  NotificationDocument
-} from '../notifications/notification.schema';
+import { Notification, NotificationDocument } from '../notifications/notification.schema';
 
 @Injectable()
 export class NotificationsService {

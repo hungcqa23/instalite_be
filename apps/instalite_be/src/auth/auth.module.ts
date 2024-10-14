@@ -11,13 +11,7 @@ import { JwtRefreshTokenStrategy } from './jwt-refresh-token.strategy';
 import { LocalStrategy } from './local.strategy';
 
 @Module({
-  imports: [
-    UsersModule,
-    JwtModule,
-    EmailModule,
-    PassportModule,
-    JwtModule.register({})
-  ],
+  imports: [UsersModule, JwtModule, EmailModule, PassportModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtRefreshTokenStrategy, JwtStrategy],
   exports: [AuthService, JwtStrategy]

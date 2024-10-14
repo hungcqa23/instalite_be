@@ -61,7 +61,6 @@ import { UsersModule } from './users/users.module';
     BookmarksModule,
     NotificationsModule,
     ConfigModule
-    // GatewayModule
   ],
   providers: [EmailService, Logger]
 })

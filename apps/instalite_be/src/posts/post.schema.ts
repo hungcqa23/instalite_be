@@ -1,4 +1,4 @@
-import { PostType } from '@app/common/constants/enum';
+import { PostType } from '@app/common/constants/enums';
 import mongoose, { Document } from 'mongoose';
 
 import { Prop, Schema, SchemaFactory, raw } from '@nestjs/mongoose';

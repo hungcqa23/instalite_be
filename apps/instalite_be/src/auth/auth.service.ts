@@ -3,7 +3,13 @@ import * as bcrypt from 'bcryptjs';
 import { Response } from 'express';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+  UnauthorizedException
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -22,6 +28,22 @@ export class AuthService {
     private readonly logger: Logger
   ) {}
 
+  private async verifyPassword(password: string, hashedPassword: string) {
+    const isPasswordMatching = await bcrypt.compare(password, hashedPassword);
+    if (!isPasswordMatching) {
+      throw new UnauthorizedException('Wrong password');
+    }
+  }
+
+  public async getAuthenticatedUser(email: string, password: string) {
+    const user = await this.usersService.getUserByEmail(email);
+    if (!user) {
+      throw new BadRequestException(UserMessages.NOT_FOUND);
+    }
+    await this.verifyPassword(password, user.password);
+    return user;
+  }
+
   public async signUp(createUserDto: CreateUserDto) {
     // Hash password
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -30,6 +52,7 @@ export class AuthService {
         ...createUserDto,
         password: hashedPassword
       });
+
       const token = await this.signRefreshAndAccessTokens(newUser._id.toString(), newUser.username);
       await this.usersService.updateRefreshToken(newUser._id.toString(), token.refreshToken);
 
@@ -43,15 +66,6 @@ export class AuthService {
     } catch {
       throw new BadRequestException('Email or username already in use');
     }
-  }
-
-  public async getAuthenticatedUser(email: string, password: string) {
-    const user = await this.usersService.getUserByEmail(email);
-    if (!user) {
-      throw new BadRequestException(UserMessages.NOT_FOUND);
-    }
-    await this.verifyPassword(password, user.password);
-    return user;
   }
 
   public async signRefreshAndAccessTokens(userId: string, username: string) {
@@ -100,12 +114,5 @@ export class AuthService {
   ) {
     this.sendCookie(res, 'access_token', token.accessToken);
     this.sendCookie(res, 'refresh_token', token.refreshToken);
-  }
-
-  private async verifyPassword(password: string, hashedPassword: string) {
-    const isPasswordMatching = await bcrypt.compare(password, hashedPassword);
-    if (!isPasswordMatching) {
-      throw new BadRequestException('Wrong password');
-    }
   }
 }

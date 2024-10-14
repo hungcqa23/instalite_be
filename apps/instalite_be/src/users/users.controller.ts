@@ -24,8 +24,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../auth/dtos/create-user.dto';
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAccessTokenGuard } from '../auth/jwt-access-token.guard';
-import { RequestWithUser } from '../auth/types/request-with-user.interface';
 import { CreateFollowDto } from './dto/create-follow.dto';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { UnFollowDto } from './dto/un-follow-dto';
@@ -152,9 +152,7 @@ export class UsersController {
   @UseGuards(JwtAccessTokenGuard)
   async getUserByUsername(
     @Param('username')
-    username: string,
-    @Req()
-    req: RequestWithUser
+    username: string
   ) {
     const data = await this.usersService.getUserByUsername(username);
     return {

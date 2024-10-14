@@ -1,11 +1,13 @@
-import { PostType } from '@app/common/constants/enum';
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+import { PostType } from '@app/common/constants/enums';
 import { PostMessages } from '@app/common/constants/messages';
 import { PageMetaDto } from '@app/common/pagination/page-meta.dto';
 import { PageOptionsDto } from '@app/common/pagination/page-options.dto';
 import { PageDto } from '@app/common/pagination/page.dto';
 import { Model, Types } from 'mongoose';
 
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { BookMark, BookMarkDocument } from '../bookmarks/bookmarks.schema';
@@ -28,7 +30,9 @@ export class PostsService {
     @InjectModel(Like.name)
     private readonly likeModel: Model<LikeDocument>,
     @InjectModel(BookMark.name)
-    private readonly bookMarkModel: Model<BookMarkDocument>
+    private readonly bookMarkModel: Model<BookMarkDocument>,
+    @Inject(NOTIFICATIONS_SERVICE)
+    private readonly notificationsService: ClientProxy
   ) {}
 
   public async create(
@@ -65,6 +69,7 @@ export class PostsService {
         }
       )
     ]);
+
     return post;
   }
 
@@ -79,12 +84,16 @@ export class PostsService {
       })
       ?.populate({
         path: 'parentPostId',
-        select: 'content createdAt updatedAt userId',
+        select: 'userId content createdAt updatedAt',
         populate: {
           path: 'userId',
           select: 'username avatar'
         }
       });
+
+    this.notificationsService.emit('notify_email', {
+      email: 'abcd@gmail.com'
+    });
 
     if (!post) throw new HttpException(PostMessages.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     return post;

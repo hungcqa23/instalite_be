@@ -1,5 +1,3 @@
-import 'express';
-
 import { Body, Controller, Post } from '@nestjs/common';
 
 import { GoogleAuthService } from './google-auth.service';

@@ -23,10 +23,10 @@ import { CreateUserDto } from '../auth/dtos/create-user.dto';
 import { LogInDto } from '../auth/dtos/log-in.dto';
 import { JwtAccessTokenGuard } from '../auth/jwt-access-token.guard';
 import { JwtRefreshGuard } from '../auth/jwt-refresh.guard';
-import { LocalAuthenticationGuard } from '../auth/local-authentication.guard';
-import { RequestWithUser } from '../auth/types/request-with-user.interface';
 import { EmailService } from '../email/email.service';
 import { UsersService } from '../users/users.service';
+import { LocalAuthenticationGuard } from './guards/local-authentication.guard';
+import { RequestWithUser } from './interfaces/request-with-user.interface';
 
 @Controller('auth')
 @ApiTags('Auth')

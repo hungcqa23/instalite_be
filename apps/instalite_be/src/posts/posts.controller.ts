@@ -22,8 +22,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAccessTokenGuard } from '../auth/jwt-access-token.guard';
-import { RequestWithUser } from '../auth/types/request-with-user.interface';
 import LocalFilesInterceptor from '../files/interceptor/local-file.interceptor';
 import { CreatePostDto } from '../posts/dto/create-post.dto';
 import { GetPostDto } from '../posts/dto/get-post.dto';

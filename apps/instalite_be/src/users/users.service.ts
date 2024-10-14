@@ -1,4 +1,3 @@
-import { NotificationType } from '@app/common/constants/enum';
 import { UserMessages } from '@app/common/constants/messages';
 import { Cache } from 'cache-manager';
 import { Model, Types } from 'mongoose';
@@ -84,6 +83,7 @@ export class UsersService {
       _id: new Types.ObjectId(userId),
       refreshToken
     });
+
     if (!user) throw new UnauthorizedException();
 
     return user;
@@ -107,7 +107,6 @@ export class UsersService {
       })
       .select('-password');
 
-    if (!user) throw new HttpException(UserMessages.NOT_FOUND, HttpStatus.NOT_FOUND);
     return user;
   }
 
@@ -192,35 +191,6 @@ export class UsersService {
       followedUserId: new Types.ObjectId(followedUserId)
     });
 
-    await Promise.all([
-      this.userModel.findOneAndUpdate(
-        {
-          _id: userId
-        },
-        {
-          $inc: {
-            followingCount: 1
-          }
-        }
-      ),
-      this.userModel.findOneAndUpdate(
-        {
-          _id: followedUserId
-        },
-        {
-          $inc: {
-            followersCount: 1
-          }
-        }
-      ),
-      this.notificationModel.create({
-        userId,
-        userReceiverId: new Types.ObjectId(followedUserId),
-        type: NotificationType.Follow,
-        content: UserMessages.FOLLOW_SUCCESSFULLY
-      })
-    ]);
-
     return UserMessages.FOLLOW_SUCCESSFULLY;
   }
 
@@ -231,36 +201,12 @@ export class UsersService {
     });
     if (!unfollow) return UserMessages.ALREADY_UNFOLLOWED;
 
-    await Promise.all([
-      this.userModel.findOneAndUpdate(
-        {
-          _id: userId
-        },
-        {
-          $inc: {
-            followingCount: -1
-          }
-        }
-      ),
-      this.userModel.findOneAndUpdate(
-        {
-          _id: unFollowedUserId
-        },
-        {
-          $inc: {
-            followersCount: -1
-          }
-        }
-      )
-    ]);
-
     return UserMessages.UNFOLLOW_SUCCESSFULLY;
   }
 
   public async getRecommendUsers(userId: string) {
-    // Find list of user who I'm currently following
     const following = await this.followModel.find({
-      userId: userId
+      userId
     });
 
     const followingIds = [
@@ -285,6 +231,7 @@ export class UsersService {
     const userId = await this.userModel.findOne({
       username
     });
+
     const followers = await this.followModel
       .find({
         followedUserId: userId._id
@@ -298,6 +245,7 @@ export class UsersService {
     const userId = await this.userModel.findOne({
       username
     });
+
     const followings = await this.followModel
       .find({
         userId: userId._id

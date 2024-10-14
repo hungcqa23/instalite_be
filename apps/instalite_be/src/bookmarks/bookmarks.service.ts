@@ -30,8 +30,7 @@ export class BookmarksService {
     //   );
 
     const isBookmarked = await this.isBookmarkedPost(userId, postId);
-    if (isBookmarked)
-      throw new HttpException('Already bookmarked', HttpStatus.CONFLICT);
+    if (isBookmarked) throw new HttpException('Already bookmarked', HttpStatus.CONFLICT);
 
     const result = await this.bookMarkModel.findOneAndUpdate(
       {

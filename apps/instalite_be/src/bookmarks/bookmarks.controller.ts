@@ -1,18 +1,9 @@
 import { BookmarkMessages } from '@app/common/constants/messages';
 
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Req,
-  UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
+import { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { JwtAccessTokenGuard } from '../auth/jwt-access-token.guard';
-import { RequestWithUser } from '../auth/types/request-with-user.interface';
 import { BookmarksService } from '../bookmarks/bookmarks.service';
 import { CreateBookMarkDto } from '../bookmarks/dto/create-bookmark.dto';
 
@@ -44,9 +35,7 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser
   ) {
-    return await this.bookmarksService.getBookmarkedPosts(
-      req.user._id.toString()
-    );
+    return await this.bookmarksService.getBookmarkedPosts(req.user._id.toString());
   }
 
   @Delete()
@@ -74,10 +63,7 @@ export class BookmarksController {
     @Param('postId')
     postId: string
   ) {
-    const data = await this.bookmarksService.isBookmarkedPost(
-      req.user._id.toString(),
-      postId
-    );
+    const data = await this.bookmarksService.isBookmarkedPost(req.user._id.toString(), postId);
 
     return {
       message: 'Check if post is bookmarked',
@@ -90,9 +76,7 @@ export class BookmarksController {
     @Req()
     req: RequestWithUser
   ) {
-    const data = await this.bookmarksService.getAllBookmarkedPosts(
-      req.user._id.toString()
-    );
+    const data = await this.bookmarksService.getAllBookmarkedPosts(req.user._id.toString());
     return {
       message: 'Get all bookmarked posts',
       data

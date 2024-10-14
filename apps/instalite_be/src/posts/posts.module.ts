@@ -1,4 +1,8 @@
+import { NOTIFICATIONS_SERVICE } from '@app/common';
+
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { BookmarksModule } from '../bookmarks/bookmarks.module';
@@ -20,7 +24,20 @@ import { PostsService } from './posts.service';
     FilesModule,
     UsersModule,
     LikesModule,
-    BookmarksModule
+    BookmarksModule,
+    ClientsModule.registerAsync([
+      {
+        name: NOTIFICATIONS_SERVICE,
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: configService.get<string>('NOTIFICATIONS_HOST'),
+            port: configService.get<number>('NOTIFICATIONS_PORT')
+          }
+        }),
+        inject: [ConfigService]
+      }
+    ])
     // forwardRef(() => BookmarksModule
   ],
   controllers: [PostsController],
